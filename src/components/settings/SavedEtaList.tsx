@@ -1,13 +1,13 @@
 import React, { useState, useContext, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Droppable from "../StrictModeDroppable";
-import { Box, SxProps, Theme, Typography } from "@mui/material";
 import SuccinctTimeReport from "../home/SuccinctTimeReport";
 import { reorder } from "../../utils";
 import { useTranslation } from "react-i18next";
 import { ManageMode } from "../../data";
 import DbContext from "../../context/DbContext";
 import CollectionContext from "../../CollectionContext";
+import { cn } from "../../lib/utils";
 
 const SavedEtaList = ({ mode }: { mode: ManageMode }) => {
   const {
@@ -16,14 +16,12 @@ const SavedEtaList = ({ mode }: { mode: ManageMode }) => {
   const { savedEtas, setSavedEtas, updateSavedEtas } =
     useContext(CollectionContext);
   const [items, setItems] = useState(
-    // cannot use Array.reverse() as it is in-place reverse
     savedEtas.filter((id) => id.split("/")[0] in routeList).reverse()
   );
   const { t } = useTranslation();
 
   const handleDragEnd = useCallback(
     ({ destination, source }: DropResult) => {
-      // dropped outside the list
       if (!destination) return;
 
       const newItems = reorder(items, source.index, destination.index);
@@ -46,10 +44,10 @@ const SavedEtaList = ({ mode }: { mode: ManageMode }) => {
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="saved-eta-list">
         {(provided) => (
-          <Box
+          <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            sx={containerSx}
+            className="p-1 overflow-y-auto"
           >
             {items.length ? (
               items.map((eta, index) => (
@@ -63,12 +61,12 @@ const SavedEtaList = ({ mode }: { mode: ManageMode }) => {
                 </React.Fragment>
               ))
             ) : (
-              <Typography sx={{ textAlign: "center", marginTop: 5 }}>
+              <div className="text-center mt-5">
                 <b>{t("未有收藏路線")}</b>
-              </Typography>
+              </div>
             )}
             {provided.placeholder}
-          </Box>
+          </div>
         )}
       </Droppable>
     </DragDropContext>
@@ -92,26 +90,17 @@ const DraggableListItem = ({
 }: DraggableListItemProps) => (
   <Draggable draggableId={item} index={index} isDragDisabled={mode !== "order"}>
     {(provided) => (
-      <Box
+      <div
         ref={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
-        sx={entrySx}
+        className={cn(
+          "px-2 py-1 flex",
+          "shadow-[2px_2px_2px_1px_rgba(0,0,0,0.1)]"
+        )}
       >
         <SuccinctTimeReport routeId={item} mode={mode} onDelete={onDelete} />
-      </Box>
+      </div>
     )}
   </Draggable>
 );
-
-const containerSx: SxProps<Theme> = {
-  p: 1,
-  overflowY: "scroll",
-};
-
-const entrySx: SxProps<Theme> = {
-  px: 2,
-  py: 1,
-  boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.1)",
-  display: "flex",
-};

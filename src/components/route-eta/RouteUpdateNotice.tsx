@@ -1,8 +1,10 @@
-import { Box, SxProps, Theme, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DbContext from "../../context/DbContext";
 import { fetchRouteUpdatedAt, RouteListEntry } from "hk-bus-eta";
-import { useTranslation } from "react-i18next";
+import { Box } from "../ui/box";
+import { Typography } from "../ui/Typography";
+import { cn } from "../../lib/utils";
 
 interface RouteUpdateNoticeProps {
   route: RouteListEntry;
@@ -27,23 +29,16 @@ const RouteUpdateNotice = ({ route }: RouteUpdateNoticeProps) => {
   }
 
   return (
-    <Box sx={rootSx} onClick={renewDb}>
+    <Box
+      className={cn(
+        "flex justify-center flex-1 w-full p-2 my-1 border border-solid border-border rounded-sm cursor-pointer",
+        "hover:bg-muted/50"
+      )}
+      onClick={renewDb}
+    >
       <Typography>⁉️ {t("db-renew-text")}</Typography>
     </Box>
   );
 };
 
 export default RouteUpdateNotice;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "center",
-  flex: 1,
-  width: "100%",
-  p: 2,
-  my: 1,
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: (theme) => theme.shape.borderRadius / 2,
-  cursor: "pointer",
-};

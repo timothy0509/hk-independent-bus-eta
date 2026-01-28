@@ -5,7 +5,6 @@ import React, {
   useCallback,
   Suspense,
 } from "react";
-import { Box, SxProps, Theme } from "@mui/material";
 import type { RouteListEntry } from "hk-bus-eta";
 import StopAccordion from "./StopAccordion";
 import { SharingEntry } from "../../@types/types";
@@ -27,7 +26,7 @@ const StopAccordions = ({
   onStopInfo,
 }: StopAccordionsProps) => {
   const [sharingObj, setSharingObj] = useState<SharingEntry | null>(null);
-  const accordionRef = useRef<HTMLDivElement[]>([]);
+  const accordionRef = useRef<HTMLDetailsElement[]>([]);
 
   useEffect(() => {
     // scroll to specific bus stop
@@ -47,14 +46,14 @@ const StopAccordions = ({
   }, [stopIdx]);
 
   const handleRef = useCallback(
-    (idx: number) => (el: HTMLDivElement) => {
+    (idx: number) => (el: HTMLDetailsElement) => {
       accordionRef.current[idx] = el;
     },
     []
   );
 
   return (
-    <Box sx={rootSx}>
+    <div className="overflow-y-scroll">
       {stopIds.map((stopId, idx) => (
         <StopAccordion
           routeId={routeId}
@@ -74,12 +73,8 @@ const StopAccordions = ({
           <SharingModal {...sharingObj} />
         </Suspense>
       )}
-    </Box>
+    </div>
   );
 };
 
 export default StopAccordions;
-
-const rootSx: SxProps<Theme> = {
-  overflowY: "scroll",
-};

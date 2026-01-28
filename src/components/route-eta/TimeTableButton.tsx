@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Button, Divider, SxProps, Theme } from "@mui/material";
-import { Schedule as ScheduleIcon } from "@mui/icons-material";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
+import { Calendar as ScheduleIcon } from "lucide-react";
 import TimetableDrawer from "./TimetableDrawer";
 import { useTranslation } from "react-i18next";
 
@@ -10,16 +11,16 @@ const TimeTableButton = ({ routeId }: { routeId: string }) => {
 
   return (
     <>
-      <Divider orientation="vertical" sx={buttonDividerSx} />
+      <div className="absolute top-0 right-[calc(64px+2%)] border-r border-border h-full"></div>
       <Button
-        variant="text"
+        variant="ghost"
         aria-label="open-timetable"
-        sx={buttonSx}
-        size="small"
-        startIcon={<ScheduleIcon />}
+        className="absolute top-0 right-[2%] flex flex-col justify-center"
+        size="sm"
         onClick={() => setIsOpen(true)}
       >
-        {t("車程")}
+        <Icon icon={ScheduleIcon} />
+        <span>{t("車程")}</span>
       </Button>
       <TimetableDrawer
         routeId={routeId}
@@ -31,23 +32,3 @@ const TimeTableButton = ({ routeId }: { routeId: string }) => {
 };
 
 export default TimeTableButton;
-
-const buttonDividerSx: SxProps<Theme> = {
-  position: "absolute",
-  top: "0",
-  right: "calc(64px + 2%)",
-};
-
-const buttonSx: SxProps<Theme> = {
-  color: (theme) =>
-    theme.palette.getContrastText(theme.palette.background.default),
-  flexDirection: "column",
-  justifyContent: "center",
-  "& > .MuiButton-label": {
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  "& > .MuiButton-startIcon": {
-    margin: 0,
-  },
-};

@@ -1,5 +1,5 @@
-import { SxProps, Theme, Typography } from "@mui/material";
-import { useMemo } from "react";
+import { Typography } from "../ui/Typography";
+import { cn } from "../../lib/utils";
 
 interface RouteNoProps {
   routeNo: string;
@@ -25,36 +25,29 @@ const RouteNo = ({ routeNo, component, align, fontSize }: RouteNoProps) => {
   const prefix = routeNo.slice(0, splitIdx);
   const suffix = routeNo.slice(splitIdx);
 
-  const sx = useMemo(() => rootSx(fontSize), [fontSize]);
+  const fontSizeStyle = fontSize || "1.5rem";
 
   return (
     <Typography
       component={component || "h2"}
-      align={align}
       variant="caption"
-      color="textPrimary"
-      sx={sx}
+      className="leading-normal inline whitespace-nowrap"
+      style={{ textAlign: align }}
     >
-      <span>{prefix}</span>
-      <span>{suffix}</span>
+      <span
+        className={cn("block font-['Oswald',sans-serif]")}
+        style={{ fontSize: fontSizeStyle }}
+      >
+        {prefix}
+      </span>
+      <span
+        className="block font-['Oswald',sans-serif]"
+        style={{ fontSize: "1.2rem" }}
+      >
+        {suffix}
+      </span>
     </Typography>
   );
 };
 
 export default RouteNo;
-
-const rootSx = (fontSize?: string): SxProps<Theme> => {
-  return {
-    lineHeight: "normal",
-    display: "inline",
-    "& > span:nth-of-type(1)": {
-      fontSize: fontSize || "1.5rem",
-      fontFamily: '"Oswald", sans-serif',
-    },
-    "& > span:nth-of-type(2)": {
-      fontSize: "1.2rem",
-      fontFamily: '"Oswald", sans-serif',
-    },
-    whiteSpace: "nowrap",
-  };
-};

@@ -1,23 +1,20 @@
-import {
-  Box,
-  Container,
-  ContainerProps,
-  IconButton,
-  Paper,
-  SxProps,
-  Theme,
-} from "@mui/material";
+import { Box } from "../ui/box";
+import { Button } from "../ui/Button";
+import { cn } from "../../lib/utils";
 import { RefObject, useContext, useRef } from "react";
 import Draggable from "react-draggable";
 import SuccinctTimeReport from "../home/SuccinctTimeReport";
-import {
-  Minimize as MinimizeIcon,
-  Close as CloseIcon,
-  PushPin as PushPinIcon,
-} from "@mui/icons-material";
 import PinnedEtasContext from "../../context/PinnedEtasContext";
+import { Icon } from "../ui/Icon";
+import { Minimize2, X, MapPin } from "lucide-react";
 
-const PinDialogContainer = (props: ContainerProps) => {
+const PinDialogContainer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   return (
     <Draggable
@@ -26,7 +23,9 @@ const PinDialogContainer = (props: ContainerProps) => {
       cancel='[id*="pin-dialog-irrelavant"]'
       positionOffset={{ x: 0, y: 150 }}
     >
-      <Container {...props} ref={nodeRef} />
+      <div ref={nodeRef} className={cn(className)}>
+        {children}
+      </div>
     </Draggable>
   );
 };
@@ -45,69 +44,53 @@ export default function PinDialog() {
   }
 
   return (
-    <PinDialogContainer maxWidth="xs" sx={containerSx}>
+    <PinDialogContainer className="absolute max-w-screen-sm max-h-[30vh] overflow-y-auto flex flex-col border border-primary bg-background z-50 p-0">
       <Box
         id="draggable-pin-dialog-title"
-        sx={{
-          px: 1,
-          py: 0.5,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          bgcolor: (t) => t.palette.background.default,
-        }}
+        className="flex items-center justify-between px-1 py-0.5 bg-background"
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <PushPinIcon sx={{ transform: "rotate(-45deg)" }} />
-          <IconButton
+        <Box className="flex items-center">
+          <Icon icon={MapPin} className="-rotate-45" />
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={tooglePinnedEtasDialog}
             id="pin-dialog-irrelavant-min-icon"
           >
-            <MinimizeIcon />
-          </IconButton>
+            <Icon icon={Minimize2} />
+          </Button>
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
+        <Box className="flex items-center">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={closePinnedEtas}
             id="pin-dialog-irrelavant-close-icon"
           >
-            <CloseIcon />
-          </IconButton>
+            <Icon icon={X} />
+          </Button>
         </Box>
       </Box>
-      <Paper id="pin-dialog-irrelavant-paper" sx={{ overflow: "scroll" }}>
+      <div id="pin-dialog-irrelavant-paper" className="overflow-y-auto">
         {!isHidden &&
           pinnedEtas.map((eta) => (
-            <Box sx={entrySx} key={`pinned-${eta}`}>
+            <Box
+              className="flex items-center shadow-[2px_2px_2px_1px_rgba(0,0,0,0.1)]"
+              key={`pinned-${eta}`}
+            >
               <SuccinctTimeReport routeId={eta} />
               <Box>
-                <IconButton onClick={() => togglePinnedEta(eta)}>
-                  <CloseIcon />
-                </IconButton>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => togglePinnedEta(eta)}
+                >
+                  <Icon icon={X} />
+                </Button>
               </Box>
             </Box>
           ))}
-      </Paper>
+      </div>
     </PinDialogContainer>
   );
 }
-
-const entrySx: SxProps<Theme> = {
-  boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.1)",
-  display: "flex",
-  alignItems: "center",
-};
-
-const containerSx: SxProps<Theme> = {
-  position: "absolute",
-  maxHeight: "30vh",
-  overflow: "scroll",
-  display: "flex",
-  flexDirection: "column",
-  borderColor: (t) => t.palette.primary.main,
-  borderWidth: 1,
-  borderStyle: "solid",
-  paddingLeft: "0 !important",
-  paddingRight: "0 !important",
-  zIndex: (t) => t.zIndex.modal,
-};

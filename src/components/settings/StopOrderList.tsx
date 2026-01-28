@@ -1,17 +1,16 @@
 import { useState, useContext, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import Droppable from "../StrictModeDroppable";
-import { Box, IconButton, SxProps, Theme, Typography } from "@mui/material";
+import { Button } from "../ui/Button";
 import { reorder } from "../../utils";
 import { useTranslation } from "react-i18next";
-import {
-  DeleteOutline as DeleteIcon,
-  DragHandle as DragHandleIcon,
-} from "@mui/icons-material";
+import { Trash2, GripVertical } from "lucide-react";
+import { Icon } from "../ui/Icon";
 import { ManageMode } from "../../data";
 import useLanguage from "../../hooks/useTranslation";
 import DbContext from "../../context/DbContext";
 import CollectionContext from "../../CollectionContext";
+import { cn } from "../../lib/utils";
 
 const StopOrderList = ({ mode }: { mode: ManageMode }) => {
   const {
@@ -26,7 +25,6 @@ const StopOrderList = ({ mode }: { mode: ManageMode }) => {
 
   const handleDragEnd = useCallback(
     ({ destination, source }: DropResult) => {
-      // dropped outside the list
       if (!destination) return;
 
       const newItems = reorder(items, source.index, destination.index);
@@ -49,10 +47,10 @@ const StopOrderList = ({ mode }: { mode: ManageMode }) => {
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="saved-stop-list">
         {(provided) => (
-          <Box
+          <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            sx={containerSx}
+            className="p-1 overflow-y-auto"
           >
             {items.length ? (
               items.map((stop, index) => (
@@ -65,12 +63,12 @@ const StopOrderList = ({ mode }: { mode: ManageMode }) => {
                 />
               ))
             ) : (
-              <Typography sx={{ textAlign: "center", marginTop: 5 }}>
+              <div className="text-center mt-5">
                 <b>{t("未有收藏車站")}</b>
-              </Typography>
+              </div>
             )}
             {provided.placeholder}
-          </Box>
+          </div>
         )}
       </Droppable>
     </DragDropContext>
@@ -105,38 +103,28 @@ const DraggableListItem = ({
       isDragDisabled={mode !== "order"}
     >
       {(provided) => (
-        <Box
+        <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          sx={entrySx}
-        >
-          <Box>
-            <Typography variant="body1">
-              {stopList[stopId]?.name[language]}
-            </Typography>
-          </Box>
-          {mode === "order" && <DragHandleIcon />}
-          {mode === "edit" && (
-            <IconButton onClick={onDelete}>
-              <DeleteIcon />
-            </IconButton>
+          className={cn(
+            "px-2 py-2 flex justify-between items-center",
+            "shadow-[2px_2px_2px_1px_rgba(0,0,0,0.1)]"
           )}
-        </Box>
+        >
+          <div>
+            <p className="text-sm font-medium">
+              {stopList[stopId]?.name[language]}
+            </p>
+          </div>
+          {mode === "order" && <Icon icon={GripVertical} size={20} />}
+          {mode === "edit" && (
+            <Button variant="ghost" size="icon" onClick={onDelete}>
+              <Icon icon={Trash2} size={18} />
+            </Button>
+          )}
+        </div>
       )}
     </Draggable>
   );
-};
-
-const containerSx: SxProps<Theme> = {
-  p: 1,
-  overflowY: "scroll",
-};
-
-const entrySx: SxProps<Theme> = {
-  px: 2,
-  py: 2,
-  boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.1)",
-  display: "flex",
-  justifyContent: "space-between",
 };

@@ -1,9 +1,10 @@
-import { Paper, SxProps, Theme, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useWeather } from "../Weather";
-import ErrorIcon from "@mui/icons-material/Error";
+import { Icon } from "../ui/Icon";
+import { Alert } from "../ui/alert";
 import { useContext } from "react";
 import AppContext from "../../context/AppContext";
+import { AlertTriangle } from "lucide-react";
 
 const BadWeatherCard = () => {
   const { t } = useTranslation();
@@ -24,14 +25,14 @@ const BadWeatherCard = () => {
 
   if (navigator.userAgent !== "prerendering" && isAdverse()) {
     return (
-      <Paper
-        variant="outlined"
-        sx={rootSx}
+      <Alert
+        variant="warning"
+        className="rounded-lg border cursor-pointer px-2 py-1 flex items-center gap-1 text-left"
         onClick={() => openUrl(t("bad-weather-link"))}
       >
-        <ErrorIcon color="error" />
-        <Typography>{t("bad-weather-text")}</Typography>
-      </Paper>
+        <Icon icon={AlertTriangle} className="text-warning" />
+        <span className="text-sm">{t("bad-weather-text")}</span>
+      </Alert>
     );
   } else {
     return null;
@@ -42,14 +43,3 @@ export default BadWeatherCard;
 
 const adverseWCode = ["TC8NE", "TC8SE", "TC8NW", "TC8SW", "TC9", "TC10"];
 const adverseRCode = ["WARINR", "WRAINB"];
-
-const rootSx: SxProps<Theme> = {
-  borderRadius: (theme) => theme.shape.borderRadius,
-  cursor: "pointer",
-  px: 2,
-  py: 1,
-  display: "flex",
-  alignItems: "center",
-  textAlign: "left",
-  gap: 1,
-};

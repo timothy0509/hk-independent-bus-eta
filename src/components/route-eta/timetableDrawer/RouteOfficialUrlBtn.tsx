@@ -1,7 +1,8 @@
 import { useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, SxProps, Theme } from "@mui/material";
-import { Launch as LaunchIcon } from "@mui/icons-material";
+import { Button } from "../../ui/Button";
+import { Icon } from "../../ui/Icon";
+import { ExternalLink } from "lucide-react";
 import useLanguage from "../../../hooks/useTranslation";
 import DbContext from "../../../context/DbContext";
 import AppContext from "../../../context/AppContext";
@@ -84,25 +85,21 @@ const RouteOffiicalUrlBtn = ({ routeId }: RouteOffiicalUrlBtnProps) => {
   );
 
   return (
-    <Box sx={rootSx}>
+    <div className="flex gap-2">
       {sites.map(([c, url]) => (
         <Button
           key={c}
           onClick={handleClick(url)}
-          variant="outlined"
-          size="small"
-          endIcon={<LaunchIcon />}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
         >
           {t(c)}
+          <Icon icon={ExternalLink} size={16} />
         </Button>
       ))}
-    </Box>
+    </div>
   );
 };
 
 export default RouteOffiicalUrlBtn;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  gap: 1,
-};

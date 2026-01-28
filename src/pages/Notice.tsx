@@ -1,4 +1,4 @@
-import { Link, Paper, SxProps, Theme, Typography } from "@mui/material";
+import { Link } from "../components/ui/link";
 import { Fragment, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -29,59 +29,32 @@ const Notice = () => {
   }, []);
 
   return (
-    <Paper sx={paperSx} square elevation={0}>
+    <div className="flex flex-col overflow-auto w-full flex-1 text-left p-1 gap-2 bg-background">
       {notices.map(({ msgID, ChinText, EngText, ReferenceDate }, i) => (
         <Fragment key={msgID}>
           {(i === 0 || ReferenceDate !== notices[i - 1].ReferenceDate) && (
-            <Typography variant="body2" sx={{ alignSelf: "flex-end" }}>
-              {ReferenceDate}
-            </Typography>
+            <p className="text-xs self-end">{ReferenceDate}</p>
           )}
-          <Paper elevation={5} sx={noticeContainerSx}>
+          <div className="p-2 flex flex-col gap-2 break-words shadow-md">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                p: ({ ...props }) => <Typography variant="body1" {...props} />,
+                p: ({ ...props }) => <p className="text-sm" {...props} />,
                 a: ({ ...props }) => (
-                  <Link sx={linkSx} target="_blank" {...props} />
+                  <Link target="_blank" {...props} className="text-primary" />
                 ),
               }}
             >
               {language === "zh" ? ChinText : EngText}
             </ReactMarkdown>
-          </Paper>
+          </div>
         </Fragment>
       ))}
-    </Paper>
+    </div>
   );
 };
 
 export default Notice;
-
-const paperSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  overflow: "auto",
-  width: "100%",
-  flex: 1,
-  textAlign: "left",
-  p: 1,
-  gap: 2,
-  bgcolor: "unset",
-};
-
-const noticeContainerSx: SxProps<Theme> = {
-  p: 2,
-  display: "flex",
-  flexDirection: "column",
-  gap: 2,
-  wordBreak: "break-word",
-};
-
-const linkSx: SxProps<Theme> = {
-  color: (t) =>
-    t.palette.mode === "dark" ? t.palette.primary.main : t.palette.primary.dark,
-};
 
 const xmlToJson = (root: Document): NoticeType[] => {
   return Array.from(root.querySelectorAll("message"))

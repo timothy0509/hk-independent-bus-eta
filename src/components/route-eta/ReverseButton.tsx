@@ -1,6 +1,7 @@
 import { useContext, useMemo, useCallback } from "react";
-import { Button, Divider, SxProps, Theme } from "@mui/material";
-import { SyncAlt as SyncAltIcon } from "@mui/icons-material";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
+import { ArrowRightLeft as SyncAltIcon } from "lucide-react";
 import { RouteListEntry } from "hk-bus-eta";
 import { useNavigate } from "react-router-dom";
 import { vibrate, getDistance } from "../../utils";
@@ -126,16 +127,16 @@ const ReverseButton = ({ routeId, stopId }: ReverseButtonProps) => {
   return (
     reverseRouteUrl && (
       <>
-        <Divider orientation="vertical" sx={buttonDividerSx} />
+        <div className="absolute top-0 left-[calc(64px+2%)] border-r border-border h-full"></div>
         <Button
-          variant="text"
+          variant="ghost"
           aria-label="open-timetable"
-          sx={buttonSx}
-          size="small"
-          startIcon={<SyncAltIcon />}
+          className="absolute top-0 left-[2%] flex flex-col justify-center"
+          size="sm"
           onClick={handleRevserClick(reverseRouteUrl)}
         >
-          {t("對頭線")}
+          <Icon icon={SyncAltIcon} />
+          <span>{t("對頭線")}</span>
         </Button>
       </>
     )
@@ -143,26 +144,3 @@ const ReverseButton = ({ routeId, stopId }: ReverseButtonProps) => {
 };
 
 export default ReverseButton;
-
-const buttonDividerSx: SxProps<Theme> = {
-  position: "absolute",
-  top: "0",
-  left: "calc(64px + 2%)",
-};
-
-const buttonSx: SxProps<Theme> = {
-  color: (theme) =>
-    theme.palette.getContrastText(theme.palette.background.default),
-  position: "absolute",
-  top: 0,
-  left: "2%",
-  flexDirection: "column",
-  justifyContent: "center",
-  "& > .MuiButton-label": {
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  "& > .MuiButton-startIcon": {
-    margin: 0,
-  },
-};

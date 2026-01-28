@@ -1,4 +1,3 @@
-import { Box, SxProps, Theme, Container, CssBaseline } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
@@ -7,14 +6,14 @@ import CollectionDrawer from "./CollectionDrawer";
 import CollectionDialog from "./collections/CollectionDialog";
 import { Suspense } from "react";
 import PinDialog from "./PinDialog";
+import { Box } from "../ui/box";
 
 const Root = () => {
   return (
-    <Container maxWidth="xs" disableGutters sx={rootSx}>
-      <CssBaseline />
+    <div className="flex h-full max-w-screen-sm flex-col justify-between mx-auto">
       <Header />
       <Suspense fallback={null}>
-        <Box sx={mainSx}>
+        <Box className="flex flex-1 flex-col overflow-hidden bg-background">
           <GACookieConsent />
           <Outlet />
         </Box>
@@ -23,23 +22,8 @@ const Root = () => {
       <CollectionDrawer />
       <CollectionDialog />
       <PinDialog />
-    </Container>
+    </div>
   );
-};
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-  height: "100%",
-};
-
-const mainSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  flex: 1,
-  overflow: "hidden",
-  backgroundColor: (theme) => theme.palette.background.default,
 };
 
 export default Root;

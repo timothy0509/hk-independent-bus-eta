@@ -1,17 +1,11 @@
-import {
-  Box,
-  Divider,
-  List,
-  ListItem,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
 import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import RouteOffiicalUrlBtn from "../timetableDrawer/RouteOfficialUrlBtn";
+import RouteOffiicalUrlBtn from "./RouteOfficialUrlBtn";
 import { isHoliday } from "../../../timetable";
 import DbContext from "../../../context/DbContext";
+import { Box } from "../../ui/box";
+import { Typography } from "../../ui/Typography";
+import { cn } from "../../../lib/utils";
 
 interface TimeTableProps {
   routeId: string;
@@ -31,11 +25,14 @@ const TimeTable = ({ routeId }: TimeTableProps) => {
 
   return (
     <>
-      <List sx={{ flex: 1, overflow: "auto" }}>
+      <div className="flex-1 overflow-auto">
         {freq &&
           Object.entries(freq).map(([serviceId, dayFreq]) => (
-            <ListItem key={serviceId} sx={entriesSx}>
-              <Typography variant="subtitle1">
+            <div
+              key={serviceId}
+              className="flex flex-col items-start gap-2 px-4 py-2"
+            >
+              <Typography variant="h6" className="font-semibold">
                 {t(ServiceIds[serviceId])}
               </Typography>
               {Object.entries(dayFreq)
@@ -43,16 +40,17 @@ const TimeTable = ({ routeId }: TimeTableProps) => {
                 .map(([start, details]) => (
                   <Box
                     key={`${serviceId}-${start}`}
-                    sx={
+                    className={cn(
+                      "flex justify-between w-[80%]",
                       isCurrentTimeslot(
                         start,
                         details,
                         serviceId,
                         isTodayHoliday
                       )
-                        ? highlightContainerSx
-                        : freqContainerSx
-                    }
+                        ? "text-primary border-b border-primary"
+                        : ""
+                    )}
                   >
                     <Typography variant="body1">
                       {start} {details ? `- ${details[0]}` : ""}
@@ -67,10 +65,10 @@ const TimeTable = ({ routeId }: TimeTableProps) => {
                     )}
                   </Box>
                 ))}
-            </ListItem>
+            </div>
           ))}
-      </List>
-      <Divider sx={{ width: "80%", my: 2 }} />
+      </div>
+      <div className="w-[80%] my-2 border-b border-border" />
       <RouteOffiicalUrlBtn routeId={routeId} />
     </>
   );
@@ -113,53 +111,34 @@ const ServiceMaps: Record<
   string,
   [boolean, boolean, boolean, boolean, boolean, boolean, boolean]
 > = {
-  31: [false, true, true, true, true, true, false], // "星期一至五"
-  287: [false, true, true, true, true, true, false], // "星期一至五"
-  415: [false, true, true, true, true, true, false], // "星期一至五"
-  63: [false, true, true, true, true, true, true], // "星期一至六"
-  319: [false, true, true, true, true, true, true], // "星期一至六"
-  447: [false, true, true, true, true, true, true], // "星期一至六"
-  416: [true, false, false, false, false, false, true], // "星期六至日"
-  480: [true, false, false, false, false, false, true], // "星期六至日"
-  266: [false, false, true, true, true, false, false], // "星期二至四",
-  271: [false, true, true, true, true, false, false], // "星期一至四",
-  272: [false, false, false, false, false, true, false], // "星期五"
-  288: [false, false, false, false, false, false, true], // "星期六",
-  320: [true, false, false, false, false, false, false], // "星期日及公眾假期",
-  448: [true, false, false, false, false, false, false], // "星期日及公眾假期",
-  511: [true, true, true, true, true, true, true], // "所有日子",
-  111: [true, true, true, false, true, true, true], // "除星期三外",
-  1: [false, true, false, false, false, false, false], // "星期一",
-  2: [false, false, true, false, false, false, false], // "星期二",
-  4: [false, false, false, true, false, false, false], // "星期三",
-  8: [false, false, false, false, true, false, false], // "星期四",
-  16: [false, false, false, false, false, true, false], // "星期五",
-  32: [false, false, false, false, false, false, true], // "星期六",
-  64: [true, false, false, false, false, false, false], // "星期日",
-  257: [false, true, false, false, false, false, false], // "星期一",
-  258: [false, false, true, false, false, false, false], // "星期二",
-  260: [false, false, false, true, false, false, false], // "星期三",
-  264: [false, false, false, false, true, false, false], // "星期四",
-  999: [false, false, false, false, false, false, false], // "未知日子",
-};
-
-const entriesSx: SxProps<Theme> = {
-  flexDirection: "column",
-  alignItems: "flex-start",
-};
-
-const freqContainerSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  width: "80%",
-};
-
-const highlightContainerSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  width: "80%",
-  color: (t) => t.palette.primary.main,
-  borderBottom: "1px solid",
+  31: [false, true, true, true, true, true, false],
+  287: [false, true, true, true, true, true, false],
+  415: [false, true, true, true, true, true, false],
+  63: [false, true, true, true, true, true, true],
+  319: [false, true, true, true, true, true, true],
+  447: [false, true, true, true, true, true, true],
+  416: [true, false, false, false, false, false, true],
+  480: [true, false, false, false, false, false, true],
+  266: [false, false, true, true, true, false, false],
+  271: [false, true, true, true, true, false, false],
+  272: [false, false, false, false, false, true, false],
+  288: [false, false, false, false, false, false, true],
+  320: [true, false, false, false, false, false, false],
+  448: [true, false, false, false, false, false, false],
+  511: [true, true, true, true, true, true, true],
+  111: [true, true, true, false, true, true, true],
+  1: [false, true, false, false, false, false, false],
+  2: [false, false, true, false, false, false, false],
+  4: [false, false, false, true, false, false, false],
+  8: [false, false, false, false, true, false, false],
+  16: [false, false, false, false, false, true, false],
+  32: [false, false, false, false, false, false, true],
+  64: [true, false, false, false, false, false, false],
+  257: [false, true, false, false, false, false, false],
+  258: [false, false, true, false, false, false, false],
+  260: [false, false, false, true, false, false, false],
+  264: [false, false, false, false, true, false, false],
+  999: [false, false, false, false, false, false, false],
 };
 
 const isMatchServiceId = (serviceId: string, isHoliday: boolean): boolean => {

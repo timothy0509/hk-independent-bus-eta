@@ -1,5 +1,4 @@
 import { useContext, useMemo } from "react";
-import { Box, SxProps, Theme, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AppContext from "../../context/AppContext";
 import { useEtas } from "../../hooks/useEtas";
@@ -9,18 +8,21 @@ import { getPlatformSymbol, getLineColor } from "../../utils";
 import useLanguage from "../../hooks/useTranslation";
 import DbContext from "../../context/DbContext";
 import { DoubleTrainIcon, SingleTrainIcon } from "../home/SuccinctEtas";
+import { Box } from "../ui/box";
+import { Typography } from "../ui/Typography";
+import { cn } from "../../lib/utils";
 
 interface TimeReportProps {
   routeId: string;
   seq: number;
-  containerSx?: SxProps<Theme>;
+  className?: string;
   showStopName?: boolean;
 }
 
 const TimeReport = ({
   routeId,
   seq,
-  containerSx,
+  className,
   showStopName = false,
 }: TimeReportProps) => {
   const { t } = useTranslation();
@@ -70,14 +72,14 @@ const TimeReport = ({
 
   if (etas == null) {
     return (
-      <Box sx={containerSx}>
+      <Box className={className}>
         <LinearProgress />
       </Box>
     );
   }
 
   return (
-    <Box sx={containerSx}>
+    <Box className={className}>
       {showStopName && (
         <Typography variant="caption">
           {stopList[stopId].name[language]}
@@ -136,12 +138,9 @@ const EtaLine = ({
   );
 
   const exactTimeJsx = (
-    <Box
-      component="span"
-      sx={etaFormat !== "exact" ? { fontSize: "0.9em" } : {}}
-    >
+    <span className={etaFormat !== "exact" ? "text-[0.9em]" : ""}>
       {eta.slice(11, 16)}
-    </Box>
+    </span>
   );
 
   const isTrain = co === "mtr" || co === "lightRail";
@@ -157,24 +156,22 @@ const EtaLine = ({
   }
 
   const waitTimeJsx = (
-    <Box component="span">
-      <Box
-        component="span"
-        sx={{ ...waitTimeSx, color: (theme) => theme.palette.warning.main }}
-        fontSize={trainTextUsed ? "0.9em" : undefined}
+    <span>
+      <span
+        className={cn(
+          "font-bold",
+          "text-amber-500",
+          trainTextUsed ? "text-[0.9em]" : ""
+        )}
       >
         {waitTimeText}
-      </Box>
-      {!trainTextUsed && (
-        <Box component="span" sx={{ fontSize: "0.8em" }}>
-          {t("分鐘")}
-        </Box>
-      )}
-    </Box>
+      </span>
+      {!trainTextUsed && <span className="text-[0.8em]">{t("分鐘")}</span>}
+    </span>
   );
 
   return (
-    <Typography variant="subtitle1" sx={{ justifyContent: "center" }}>
+    <Typography variant="subtitle1" className="flex justify-center">
       {etaFormat === "diff" && waitTimeJsx}
       {etaFormat === "exact" && exactTimeJsx}
       {etaFormat === "mixed" && (
@@ -183,10 +180,7 @@ const EtaLine = ({
         </>
       )}
       {!isTrain && <>&emsp;-&nbsp;</>}
-      <Box
-        component="span"
-        sx={{ fontSize: "0.8em", textOverflow: "ellipsis" }}
-      >
+      <span className="text-[0.8em] text-ellipsis overflow-hidden">
         {showCompany && <>&emsp;{t(co)}</>}
         &emsp;
         <EtaRemark
@@ -199,7 +193,7 @@ const EtaLine = ({
         {isTrain && " "}
         {!isTrain && <>&emsp;</>}
         {branchRoute && dest[language]}
-      </Box>
+      </span>
     </Typography>
   );
 };
@@ -230,15 +224,9 @@ const EtaRemark = ({
   let ret = "";
   let trains = "";
 
-  // the parser only works with en but zh can be used as fallback for display anyway
   (remark.en || remark[language]).split(" - ").forEach((part, i) => {
-    // retrieve single digit numerical string from remark as a circle text
     const platform = [...(part.matchAll(/^Platform (\d+)$/g) ?? [])][0] || [];
-    // replace only when single occurrence of single digit numerical string
-    // if the remark has more than one occurrence of numerical string
-    // or if the only numerical string occurrence are more than one digit, use original remark
     if (platform.length === 2 && platform[1].length) {
-      // getPlatformSymbol only supports single digit number
       ret = getPlatformSymbol(Number(platform[1]), platformMode) ?? platform[1];
       return;
     }
@@ -254,29 +242,20 @@ const EtaRemark = ({
 
   return (
     <>
-      <Box
-        component="span"
-        color={getLineColor([co], route, true)}
-        sx={{ marginX: 0.25 }}
-      >
+      <span style={{ color: getLineColor([co], route, true) }} className="mx-1">
         {ret}
-      </Box>
-      <Box component="span" sx={{ marginX: 0.25 }}>
+      </span>
+      <span className="mx-1">
         {trains.length === 1 && <SingleTrainIcon />}
         {trains.length === 2 && <DoubleTrainIcon />}
-      </Box>
+      </span>
       {parts.map((part, i) => (
-        <Box key={i} component="span" sx={{ marginX: 0.25 }}>
+        <span key={i} className="mx-1">
           {part}
-        </Box>
+        </span>
       ))}
     </>
   );
 };
 
 export default TimeReport;
-
-const waitTimeSx: SxProps<Theme> = {
-  fontWeight: "700",
-  color: "#088bce",
-};

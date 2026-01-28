@@ -7,29 +7,16 @@ import {
   useState,
 } from "react";
 import DbContext from "../../../context/DbContext";
-import {
-  Box,
-  Divider,
-  Icon,
-  Step,
-  StepIconProps,
-  StepLabel,
-  Stepper,
-  SxProps,
-  TextField,
-  Theme,
-  Typography,
-} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { fetchEstJourneyTime } from "hk-bus-eta";
-import {
-  TripOrigin as TripOriginIcon,
-  Lens as LensIcon,
-  Flag as FlagIcon,
-  FlagOutlined as FlagOutlinedIcon,
-} from "@mui/icons-material";
+import { Circle, CircleDot } from "lucide-react";
 import useLanguage from "../../../hooks/useTranslation";
 import { CircularProgress } from "../../Progress";
+import { Input } from "../../ui/input";
+import { Box } from "../../ui/box";
+import { Icon } from "../../ui/Icon";
+import { Typography } from "../../ui/Typography";
+import { cn } from "../../../lib/utils";
 
 interface JourneyTimePanelProps {
   routeId: string;
@@ -145,84 +132,93 @@ const JourneyTimePanel = ({ routeId }: JourneyTimePanelProps) => {
   );
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      pt={1}
-      flex={1}
-      overflow="hidden"
-    >
-      <Box display="flex" flexDirection="column" gap={1} p={1}>
-        <Box display="flex" gap={1} onClick={handlePickChoice("start")}>
-          <Icon color={state.choice === "start" ? "primary" : undefined}>
-            {state.choice === "start" ? <FlagIcon /> : <FlagOutlinedIcon />}
-          </Icon>
-          <TextField
-            variant="standard"
+    <Box className="flex flex-col flex-1 pt-1 overflow-hidden">
+      <Box className="flex flex-col gap-1 p-1">
+        <Box
+          className="flex gap-1 cursor-pointer"
+          onClick={handlePickChoice("start")}
+        >
+          <Icon
+            icon={state.choice === "start" ? CircleDot : Circle}
+            className={cn(
+              "w-5 h-5",
+              state.choice === "start" ? "text-primary" : ""
+            )}
+          />
+          <Input
             value={
               state.startSeq !== null
                 ? stopList[stops[state.startSeq]].name[lang]
                 : ""
             }
-            fullWidth
+            className="flex-1 pointer-events-none"
             placeholder={t("起點")}
-            focused={state.choice === "start"}
-            sx={{ pointerEvents: "none" }}
           />
         </Box>
-        <Box display="flex" gap={1} onClick={handlePickChoice("end")}>
-          <Icon color={state.choice === "end" ? "primary" : undefined}>
-            {state.choice === "end" ? <FlagIcon /> : <FlagOutlinedIcon />}
-          </Icon>
-          <TextField
-            variant="standard"
+        <Box
+          className="flex gap-1 cursor-pointer"
+          onClick={handlePickChoice("end")}
+        >
+          <Icon
+            icon={state.choice === "end" ? CircleDot : Circle}
+            className={cn(
+              "w-5 h-5",
+              state.choice === "end" ? "text-primary" : ""
+            )}
+          />
+          <Input
             value={
               state.endSeq !== null
                 ? stopList[stops[state.endSeq]].name[lang]
                 : ""
             }
-            fullWidth
+            className="flex-1 pointer-events-none"
             placeholder={t("目的地")}
-            focused={state.choice === "end"}
-            sx={{ pointerEvents: "none" }}
           />
         </Box>
       </Box>
-      <Box sx={jtContainerSx}>
+      <Box className="flex justify-between w-[80%] my-2">
         <Typography variant="subtitle1">{t("車程")}</Typography>
         <Typography variant="subtitle1">
           {state.isLoading ? (
-            <CircularProgress sx={{ m: 0 }} size={16} />
+            <CircularProgress size={16} />
           ) : (
             `${state.jt ?? " - "} ${t("分鐘")}`
           )}
         </Typography>
       </Box>
-      <Divider sx={{ my: 2 }} />
-      <Box overflow="auto" flex={1}>
-        <Stepper orientation="vertical">
-          {stops.map((stop, idx) => (
-            <Step
-              key={stop}
+      <div className="w-full my-2 border-b border-border" />
+      <div className="flex-1 overflow-auto">
+        {stops.map((stop, idx) => (
+          <div
+            key={stop}
+            className={cn(
+              "flex items-start gap-2 py-2 px-4 cursor-pointer hover:bg-muted/50",
+              isStepActive(idx, state.startSeq, state.endSeq) && "bg-muted/30"
+            )}
+            onClick={handlePickStop(idx)}
+          >
+            <StepIcon
               active={isStepActive(idx, state.startSeq, state.endSeq)}
-              onClick={handlePickStop(idx)}
-            >
-              <StepLabel StepIconComponent={StepIcon}>
-                {stopList[stop].name[lang]}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
+            />
+            <span className="text-sm">{stopList[stop].name[lang]}</span>
+          </div>
+        ))}
+      </div>
     </Box>
   );
 };
 
-const StepIcon = ({ active, completed }: StepIconProps) => {
-  if (active || completed) {
-    return <LensIcon />;
-  }
-  return <TripOriginIcon />;
+const StepIcon = ({ active }: { active: boolean }) => {
+  return (
+    <div className="mt-0.5">
+      {active ? (
+        <Circle className="w-4 h-4 text-primary fill-primary" />
+      ) : (
+        <Circle className="w-4 h-4 text-muted-foreground" />
+      )}
+    </div>
+  );
 };
 
 export default JourneyTimePanel;
@@ -233,12 +229,6 @@ const DEFAULT_STATE: JourneyTimePanelState = {
   jt: null,
   choice: "start",
   isLoading: false,
-};
-
-const jtContainerSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  width: "80%",
 };
 
 const isStepActive = (

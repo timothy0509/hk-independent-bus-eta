@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Box, SxProps, Theme, Typography } from "@mui/material";
+import { Typography } from "../ui/Typography";
 import { toProperCase } from "../../utils";
 import { RouteListEntry } from "hk-bus-eta";
 import useLanguage from "../../hooks/useTranslation";
@@ -13,47 +13,20 @@ const RouteTerminus = ({ terminus }: RouteTerminus) => {
   const language = useLanguage();
 
   return (
-    <Box sx={rootSx}>
-      <Box sx={fromToWrapperSx}>
-        <span>{`${t("往")} `}</span>
-        <Typography component="h3" variant="h6" sx={destinationSx}>
+    <div className="text-left">
+      <div className="flex items-baseline whitespace-nowrap overflow-x-hidden">
+        <span className="text-[0.95em] mr-0.5">{`${t("往")} `}</span>
+        <Typography component="h3" variant="h6" className="font-bold">
           {toProperCase(terminus.dest[language])}
         </Typography>
-      </Box>
-      <Box sx={fromWrapperSx}>
+      </div>
+      <div className="flex items-baseline whitespace-nowrap overflow-x-hidden">
         <Typography variant="body2">
           {toProperCase(terminus.orig[language])}
         </Typography>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 export default RouteTerminus;
-
-const rootSx: SxProps<Theme> = {
-  textAlign: "left",
-  "& > span": {},
-};
-
-const fromToWrapperSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "baseline",
-  whiteSpace: "nowrap",
-  overflowX: "hidden",
-  "& > span": {
-    fontSize: "0.95em",
-    mr: 0.5,
-  },
-};
-
-const fromWrapperSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "baseline",
-  whiteSpace: "nowrap",
-  overflowX: "hidden",
-};
-
-const destinationSx: SxProps<Theme> = {
-  fontWeight: 700,
-};

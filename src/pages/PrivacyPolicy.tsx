@@ -1,11 +1,11 @@
-import { Paper, Link } from "@mui/material";
+import { Link } from "../components/ui/link";
 
 const PrivacyPolicy = () => {
   return (
-    <Paper sx={{ p: 2, flex: 1, overflow: "auto" }}>
+    <div className="p-8 flex-1 overflow-auto">
       <strong>Privacy Policy</strong>{" "}
       <p>
-        HKBUS.APP built the hkbus.app app as an Open Source app. This SERVICE is
+        HKBUS.APP built hkbus.app app as an Open Source app. This SERVICE is
         provided by HKBUS.APP at no cost and is intended for use as is.
       </p>{" "}
       <p>
@@ -16,13 +16,13 @@ const PrivacyPolicy = () => {
       <p>
         If you choose to use our Service, then you agree to the collection and
         use of information in relation to this policy. The Personal Information
-        that we collect is used for providing and improving the Service. We will
-        not use or share your information with anyone except as described in
-        this Privacy Policy.
+        that we collect is used for providing and improving Service. We will not
+        use or share your information with anyone except as described in this
+        Privacy Policy.
       </p>{" "}
       <p>
-        The terms used in this Privacy Policy have the same meanings as in our
-        Terms and Conditions, which are accessible at hkbus.app unless otherwise
+        The terms used in this Privacy Policy have same meanings as in our Terms
+        and Conditions, which are accessible at hkbus.app unless otherwise
         defined in this Privacy Policy.
       </p>{" "}
       <p>
@@ -37,15 +37,15 @@ const PrivacyPolicy = () => {
       <div>
         <p>
           The app does use third-party services that may collect information
-          used to identify you. You can disable the collection of information at
-          anytime in the settings.
+          used to identify you. You can disable collection of information at
+          anytime in settings.
           <br />
-          This does not affect users using the hkbus.app ios app, in which the
-          analytics are disabled.
+          This does not affect users using hkbus.app ios app, in which analytics
+          are disabled.
         </p>{" "}
         <p>
-          Link to the privacy policy of third-party service providers used by
-          the app
+          Link to privacy policy of third-party service providers used by the
+          app
         </p>{" "}
         <ul>
           <li>
@@ -53,7 +53,7 @@ const PrivacyPolicy = () => {
               href="https://marketingplatform.google.com/about/analytics/terms/us/"
               target="_blank"
               rel="noopener noreferrer"
-              color="secondary"
+              className="text-primary"
             >
               Google Analytics
             </Link>
@@ -63,7 +63,7 @@ const PrivacyPolicy = () => {
               href="https://firebase.google.com/policies/analytics"
               target="_blank"
               rel="noopener noreferrer"
-              color="secondary"
+              className="text-primary"
             >
               Google Analytics for Firebase
             </Link>
@@ -77,10 +77,10 @@ const PrivacyPolicy = () => {
         We want to inform you that whenever you use our Service, in a case of an
         error in the app we collect data and information (through third-party
         products) on your phone called Log Data. This Log Data may include
-        information such as your device Internet Protocol (“IP”) address, device
-        name, operating system version, the configuration of the app when
-        utilizing our Service, the time and date of your use of the Service, and
-        other statistics.
+        information such as your device Internet Protocol (&quot;IP&quot;)
+        address, device name, operating system version, configuration of the app
+        when utilizing our Service, time and date of your use of the Service,
+        and other statistics.
       </p>{" "}
       <p>
         <strong>Cookies</strong>
@@ -92,39 +92,39 @@ const PrivacyPolicy = () => {
         memory.
       </p>{" "}
       <p>
-        This Service does not use these “cookies” explicitly. However, the app
-        may use third-party code and libraries that use “cookies” to collect
-        information and improve their services. You have the option to either
-        accept or refuse these cookies and know when a cookie is being sent to
-        your device. If you choose to refuse our cookies, you may not be able to
-        use some portions of this Service.
+        This Service does not use these &quot;cookies&quot; explicitly. However,
+        app may use third-party code and libraries that use &quot;cookies&quot;
+        to collect information and improve their services. You have option to
+        either accept or refuse these cookies and know when a cookie is being
+        sent to your device. If you choose to refuse our cookies, you may not be
+        able to use some portions of this Service.
       </p>{" "}
       <p>
         <strong>Location</strong>
       </p>{" "}
       <p>
-        Location are being used to serve the app functionality. Foreground
-        location is for suggesting bus stops/stations nearby, and background
-        location is for providing notification when you are being around your
-        destination within 500m. The app will use your background location data
-        only for this functionality and the app will not transfer the location
-        data to any parties, including the app owner and any third parties.
+        Location are being used to serve app functionality. Foreground location
+        is for suggesting bus stops/stations nearby, and background location is
+        for providing notification when you are being around your destination
+        within 500m. The app will use your background location data only for
+        this functionality and the app will not transfer location data to any
+        parties, including app owner and any third parties.
       </p>{" "}
       <p>
-        You have the option to either accept or refuse to provide the location
-        data for the app. If you choose to refuse providing the location data,
-        you may not be able to use some portions of this Service.
+        You have option to either accept or refuse to provide location data for
+        app. If you choose to refuse providing location data, you may not be
+        able to use some portions of this Service.
       </p>{" "}
       <p>
         <strong>Service Providers</strong>
       </p>{" "}
       <p>
-        We may employ third-party companies and individuals due to the following
+        We may employ third-party companies and individuals due to following
         reasons:
       </p>{" "}
       <ul>
         <li>To facilitate our Service;</li>{" "}
-        <li>To provide the Service on our behalf;</li>{" "}
+        <li>To provide Service on our behalf;</li>{" "}
         <li>To perform Service-related services; or</li>{" "}
         <li>To assist us in analyzing how our Service is used.</li>
       </ul>{" "}
@@ -132,7 +132,7 @@ const PrivacyPolicy = () => {
         We want to inform users of this Service that these third parties have
         access to their Personal Information. The reason is to perform the tasks
         assigned to them on our behalf. However, they are obligated not to
-        disclose or use the information for any other purpose.
+        disclose or use information for any other purpose.
       </p>{" "}
       <p>
         <strong>Security</strong>
@@ -140,7 +140,7 @@ const PrivacyPolicy = () => {
       <p>
         We value your trust in providing us your Personal Information, thus we
         are striving to use commercially acceptable means of protecting it. But
-        remember that no method of transmission over the internet, or method of
+        remember that no method of transmission over internet, or method of
         electronic storage is 100% secure and reliable, and we cannot guarantee
         its absolute security.
       </p>{" "}
@@ -156,17 +156,17 @@ const PrivacyPolicy = () => {
         practices of any third-party sites or services.
       </p>{" "}
       <p>
-        <strong>Children’s Privacy</strong>
+        <strong>Children&apos;s Privacy</strong>
       </p>{" "}
       <div>
         <p>
-          These Services do not address anyone under the age of 13. We do not
+          These Services do not address anyone under age of 13. We do not
           knowingly collect personally identifiable information from children
-          under 13 years of age. In the case we discover that a child under 13
-          has provided us with personal information, we immediately delete this
-          from our servers. If you are a parent or guardian and you are aware
-          that your child has provided us with personal information, please
-          contact us so that we will be able to do the necessary actions.
+          under 13 years of age. In case we discover that a child under 13 has
+          provided us with personal information, we immediately delete this from
+          our servers. If you are a parent or guardian and you are aware that
+          your child has provided us with personal information, please contact
+          us so that we will be able to do necessary actions.
         </p>
       </div>{" "}
       <p>
@@ -175,7 +175,7 @@ const PrivacyPolicy = () => {
       <p>
         We may update our Privacy Policy from time to time. Thus, you are
         advised to review this page periodically for any changes. We will notify
-        you of any changes by posting the new Privacy Policy on this page.
+        you of any changes by posting new Privacy Policy on this page.
       </p>{" "}
       <p>This policy is effective as of 2022-10-28</p>{" "}
       <p>
@@ -185,7 +185,7 @@ const PrivacyPolicy = () => {
         If you have any questions or suggestions about our Privacy Policy, do
         not hesitate to contact us at no-reply@hkbus.app.
       </p>
-    </Paper>
+    </div>
   );
 };
 

@@ -1,25 +1,17 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Divider,
-  Paper,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
-import { ChangeCircle as ChangeCircleIcon } from "@mui/icons-material";
-
-import AppContext from "../context/AppContext";
 import { useTranslation } from "react-i18next";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "../components/ui/Button";
+import { Separator } from "../components/ui/separator";
+import AppContext from "../context/AppContext";
 import AddressInput, { Address } from "../components/route-search/AddressInput";
 import SearchMap from "../components/route-search/SearchMap";
 import { fetchEtas, Eta, Company, Location } from "hk-bus-eta";
 import { setSeoHeader, getDistance, vibrate } from "../utils";
-import { LinearProgress } from "../components/Progress";
-import useLanguage from "../hooks/useTranslation";
 import SearchResultList from "../components/route-search/SearchResultList";
+import useLanguage from "../hooks/useTranslation";
 import DbContext from "../context/DbContext";
+import { cn } from "../lib/utils";
 
 export interface SearchRoute {
   routeId: string;
@@ -75,7 +67,6 @@ const RouteSearch = () => {
         )
         .filter((v, i, s) => s.indexOf(v) === i);
 
-      // check currently available routes by fetching ETA
       Promise.all(
         uniqueRoutes.map((routeIdSeq): Promise<Eta[]> => {
           const [routeId, seq] = routeIdSeq.split("/");
@@ -93,7 +84,6 @@ const RouteSearch = () => {
         })
       )
         .then((etas) =>
-          // filter out non available route
           uniqueRoutes.filter(
             (_, idx) =>
               !navigator.onLine ||
@@ -106,7 +96,6 @@ const RouteSearch = () => {
             ...prev,
             result: [
               ...prev.result,
-              // save current available route only
               ...routeResults
                 .filter((routes) =>
                   routes.reduce((ret, route) => {
@@ -121,7 +110,6 @@ const RouteSearch = () => {
                     );
                   }, true)
                 )
-                // refine nearest start if available
                 .map((routes) => {
                   let start = startLocation;
                   return routes.map((route) => {
@@ -147,7 +135,6 @@ const RouteSearch = () => {
                     };
                   });
                 })
-                // sort route by number of stops
                 .map((routes): [SearchRoute[], number] => [
                   routes,
                   routes.reduce((sum, route) => sum + route.off - route.on, 0),
@@ -170,7 +157,6 @@ const RouteSearch = () => {
   }, [language, t, AppTitle]);
 
   useEffect(() => {
-    // update status if status is rendering
     if (status === "rendering") {
       setState((prev) => ({ ...prev, status: "ready" }));
     }
@@ -194,7 +180,6 @@ const RouteSearch = () => {
         worker.current.onmessage = (e) => {
           if (e.data.type === "done") {
             terminateWorker();
-            // set status to rendering result if result not empty
             setState((prev) => ({
               ...prev,
               status: e.data.count ? "rendering" : "ready",
@@ -300,7 +285,7 @@ const RouteSearch = () => {
   }, []);
 
   return (
-    <Paper sx={rootSx} square elevation={0}>
+    <div className="w-full h-full bg-background overflow-hidden text-left">
       {!energyMode ? (
         <SearchMap
           start={
@@ -312,8 +297,8 @@ const RouteSearch = () => {
           onMarkerClick={handleMarkerClick}
         />
       ) : null}
-      <Box sx={inputContainerSx}>
-        <Box sx={inputBoxSx}>
+      <div className="flex flex-row mt-[2%] px-[2%]">
+        <div className="flex flex-col w-full">
           <AddressInput
             value={locations.start}
             placeholder={t("你的位置")}
@@ -326,52 +311,75 @@ const RouteSearch = () => {
             onChange={handleEndChange}
             stopList={stopList}
           />
-        </Box>
-        <Button sx={reverseIconSx} onClick={handleReverseClick}>
-          <ChangeCircleIcon />
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleReverseClick}
+          className="min-w-[24px]"
+        >
+          <ArrowUpDown className="h-5 w-5" />
         </Button>
-      </Box>
-      <Box sx={!energyMode ? resultListSx : resultListEnergySx}>
+      </div>
+      <div
+        className={cn(
+          "overflow-y-auto",
+          !energyMode ? "h-[calc(100%-30vh-76px)]" : "h-[calc(100%-76px)]"
+        )}
+      >
         {!locations.end ? (
           <RouteSearchDetails />
         ) : "waiting|rendering".includes(status) && result.length === 0 ? (
-          <LinearProgress />
+          <div className="w-full">
+            <div className="h-1 w-full bg-muted overflow-hidden">
+              <div className="h-full bg-primary animate-[loading_1s_ease-in-out_infinite] w-1/3" />
+            </div>
+          </div>
         ) : "ready|waiting|rendering".includes(status) && result.length ? (
-          result.map((routes, resIdx) => (
-            <SearchResultList
-              key={`search-result-${resIdx}`}
-              routes={routes}
-              idx={resIdx}
-              handleRouteClick={handleRouteClick}
-              expanded={resIdx === resultIdx.resultIdx}
-              stopIdx={
-                resIdx === resultIdx.resultIdx ? resultIdx.stopIdx : null
-              }
-            />
-          ))
+          <div className="flex flex-col gap-1">
+            {result.map((routes, resIdx) => (
+              <SearchResultList
+                key={`search-result-${resIdx}`}
+                routes={routes}
+                idx={resIdx}
+                handleRouteClick={handleRouteClick}
+                expanded={resIdx === resultIdx.resultIdx}
+                stopIdx={
+                  resIdx === resultIdx.resultIdx ? resultIdx.stopIdx : null
+                }
+              />
+            ))}
+          </div>
         ) : (
-          <>{t("找不到合適的巴士路線")}</>
+          <div className="p-4 text-center">{t("找不到合適的巴士路線")}</div>
         )}
-      </Box>
-    </Paper>
+      </div>
+    </div>
   );
 };
 
 const RouteSearchDetails = () => {
   const { t } = useTranslation();
   return (
-    <Box sx={descriptionSx}>
-      <Typography variant="h5">{t("Route Search header")}</Typography>
-      <Divider />
-      <Typography variant="subtitle1">
+    <div className="text-left mt-[5%] p-[5%]">
+      <h5 className="text-lg font-semibold mb-2">{t("Route Search header")}</h5>
+      <Separator className="my-2" />
+      <p className="text-base font-medium mb-4">
         {t("Route Search description")}
-      </Typography>
-      <br />
-      <Typography variant="body2">{t("Route Search constraint")}</Typography>
-      <Typography variant="body2">1. {t("Route Search caption 1")}</Typography>
-      <Typography variant="body2">2. {t("Route Search caption 2")}</Typography>
-      <Typography variant="body2">3. {t("Route Search caption 3")}</Typography>
-    </Box>
+      </p>
+      <p className="text-sm text-muted-foreground mb-1">
+        {t("Route Search constraint")}
+      </p>
+      <p className="text-sm text-muted-foreground mb-1">
+        1. {t("Route Search caption 1")}
+      </p>
+      <p className="text-sm text-muted-foreground mb-1">
+        2. {t("Route Search caption 2")}
+      </p>
+      <p className="text-sm text-muted-foreground">
+        3. {t("Route Search caption 3")}
+      </p>
+    </div>
   );
 };
 
@@ -388,45 +396,4 @@ const DEFAULT_STATE: RouteSearchState = {
     resultIdx: 0,
     stopIdx: [0, 0],
   },
-};
-
-const rootSx: SxProps<Theme> = {
-  background: (theme) =>
-    theme.palette.mode === "dark" ? theme.palette.background.default : "white",
-  overflowY: "hidden",
-  textAlign: "left",
-  width: "100%",
-};
-
-const inputContainerSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "row",
-  marginTop: "2%",
-  padding: "0% 2%",
-};
-
-const inputBoxSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  width: "100%",
-};
-
-const reverseIconSx: SxProps<Theme> = {
-  "min-width": "24px",
-};
-
-const resultListSx: SxProps<Theme> = {
-  overflowY: "scroll",
-  height: "calc(100% - 30vh - 76px)",
-};
-
-const resultListEnergySx: SxProps<Theme> = {
-  overflowY: "scroll",
-  height: "calc(100% - 76px)",
-};
-
-const descriptionSx: SxProps<Theme> = {
-  textAlign: "left",
-  marginTop: "5%",
-  padding: "5%",
 };

@@ -1,18 +1,9 @@
 import { useState } from "react";
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  SxProps,
-  Tab,
-  Tabs,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/Button";
+import { Share, MoreVertical } from "lucide-react";
+import { Icon } from "../ui/Icon";
 import { useTranslation } from "react-i18next";
-import { IosShare, MoreVert } from "@mui/icons-material";
 
 interface InstallDialogProps {
   open: boolean;
@@ -24,16 +15,29 @@ const InstallDialog = ({ open, handleClose }: InstallDialogProps) => {
   const [tab, setTab] = useState<"PWA" | "App">("App");
 
   return (
-    <Dialog open={open} onClose={handleClose} PaperProps={{ sx: dialogSx }}>
-      <DialogTitle sx={titleSx}>{t("安裝步驟")}</DialogTitle>
-      <DialogContent>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={tabbarSx}>
-          <Tab value="App" label="App" />
-          <Tab value="PWA" label="PWA" />
-        </Tabs>
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="w-full max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("安裝步驟")}</DialogTitle>
+        </DialogHeader>
+        <div className="flex gap-2 border-b pb-4 mb-4">
+          <Button
+            variant={tab === "App" ? "default" : "outline"}
+            onClick={() => setTab("App")}
+          >
+            App
+          </Button>
+          <Button
+            variant={tab === "PWA" ? "default" : "outline"}
+            onClick={() => setTab("PWA")}
+          >
+            PWA
+          </Button>
+        </div>
         {tab === "App" && (
-          <Box sx={appBadgeSx}>
-            <Box
+          <div className="flex flex-col items-center gap-4 py-4">
+            <div
+              className="w-[120px] cursor-pointer"
               onClick={() =>
                 window.open(
                   "https://play.google.com/store/apps/details?id=app.hkbus"
@@ -43,9 +47,11 @@ const InstallDialog = ({ open, handleClose }: InstallDialogProps) => {
               <img
                 src="/img/google-play-badge.png"
                 alt="Install via Google Play"
+                className="w-full"
               />
-            </Box>
-            <Box
+            </div>
+            <div
+              className="w-[120px] cursor-pointer"
               onClick={() =>
                 window.open(
                   "https://apps.apple.com/hk/app/%E5%B7%B4%E5%A3%AB%E5%88%B0%E7%AB%99%E9%A0%90%E5%A0%B1-hkbus-app/id1612184906"
@@ -54,80 +60,37 @@ const InstallDialog = ({ open, handleClose }: InstallDialogProps) => {
             >
               <img
                 src="/img/app-store.svg"
-                style={{ margin: "6%", width: "88%" }}
+                className="w-full"
                 alt="Install via App Store"
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
         )}
         {tab === "PWA" && (
           <>
-            <Box sx={sectionSx}>
-              <Typography variant="h5">iOS:</Typography>
-              <br />
-              <Typography variant="body1">1. {t("用 Safari 開")}</Typography>
-              <Typography variant="body1" style={{ display: "inline" }}>
+            <div className="py-2">
+              <h5 className="text-lg font-semibold mb-2">iOS:</h5>
+              <p className="text-sm">1. {t("用 Safari 開")}</p>
+              <p className="text-sm flex items-center gap-1">
                 2. {t("分享")}
-                <IosShare />
-              </Typography>
-              <Typography variant="body1">3. {t("加至主畫面")}</Typography>
-            </Box>
-            <Divider />
-            <Box sx={sectionSx}>
-              <Typography variant="h5">Android:</Typography>
-              <br />
-              <Typography variant="body1">1. {t("用 Chrome 開")}</Typography>
-              <Typography variant="body1" style={{ display: "inline" }}>
+                <Icon icon={Share} size={18} />
+              </p>
+              <p className="text-sm">3. {t("加至主畫面")}</p>
+            </div>
+            <div className="py-2 border-t pt-4">
+              <h5 className="text-lg font-semibold mb-2">Android:</h5>
+              <p className="text-sm">1. {t("用 Chrome 開")}</p>
+              <p className="text-sm flex items-center gap-1">
                 2. {t("右上選項")}
-              </Typography>
-              <MoreVert />
-              <Typography variant="body1">
-                3. {t("新增至主畫面 / 安裝應用程式")}
-              </Typography>
-            </Box>
+                <Icon icon={MoreVertical} size={18} />
+              </p>
+              <p className="text-sm">3. {t("新增至主畫面 / 安裝應用程式")}</p>
+            </div>
           </>
         )}
       </DialogContent>
     </Dialog>
   );
-};
-
-const dialogSx: SxProps<Theme> = {
-  width: "100%",
-  height: "fit-content",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-};
-
-const titleSx: SxProps<Theme> = {
-  backgroundColor: (theme) => theme.palette.background.default,
-  color: (theme) => theme.palette.primary.main,
-};
-
-const sectionSx: SxProps<Theme> = {
-  padding: "10px 0px",
-};
-
-const tabbarSx: SxProps<Theme> = {
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-};
-
-const appBadgeSx: SxProps<Theme> = {
-  py: 3,
-  "& div": {
-    width: 120,
-    cursor: "pointer",
-  },
-  "& img": {
-    maxWidth: "100%",
-    height: "auto",
-  },
 };
 
 export default InstallDialog;

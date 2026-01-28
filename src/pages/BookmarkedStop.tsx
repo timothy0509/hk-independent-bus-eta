@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import AppContext from "../context/AppContext";
-import { Box, Paper, SxProps, Theme } from "@mui/material";
 import BadWeatherCard from "../components/layout/BadWeatherCard";
 import DbRenewReminder from "../components/layout/DbRenewReminder";
 import StopTabbar from "../components/bookmarked-stop/StopTabbar";
@@ -50,15 +49,19 @@ const BookmarkedStop = () => {
   }, [savedStops, stopList]);
   const [stopTab, setStopTab] = useState<string>(defaultTab);
 
-  const bgColor = useCallback(
-    (theme: Theme) => {
-      if (stopTab === "") return "unset";
-      return theme.palette.mode === "dark"
-        ? theme.palette.background.default
-        : "white";
-    },
-    [stopTab]
-  );
+  const bgColor = useMemo(() => {
+    if (stopTab === "") return "unset";
+    return colorMode === "dark" ? "bg-background" : "bg-white";
+  }, [colorMode, stopTab]);
+
+  const backgroundImage = useMemo(() => {
+    if (stopTab === "") {
+      return `url(/img/stop-bookmark-guide-${colorMode}-${language}.png)`;
+    }
+    return "unset";
+  }, [stopTab, colorMode, language]);
+
+  const opacity = stopTab === "" ? "opacity-80" : "";
 
   useEffect(() => {
     localStorage.setItem("stopTab", stopTab);
@@ -70,44 +73,26 @@ const BookmarkedStop = () => {
   }, []);
 
   return (
-    <Paper
-      sx={{
-        ...paperSx,
-        bgcolor: bgColor,
+    <div
+      className={`text-center flex flex-col overflow-auto w-full flex-1 bg-contain bg-center bg-no-repeat ${bgColor} ${opacity}`}
+      style={{
         backgroundImage:
-          stopTab === ""
-            ? `url(/img/stop-bookmark-guide-${colorMode}-${language}.png)`
-            : "unset",
-        opacity: stopTab === "" ? "0.8" : "unset",
+          backgroundImage !== "unset" ? backgroundImage : undefined,
       }}
-      square
-      elevation={0}
     >
       <StopTabbar stopTab={stopTab} onChangeTab={handleTabChange} />
       <NoticeCard />
       <BadWeatherCard />
       <DbRenewReminder />
-      <Box sx={{ flex: 1, overflow: "scroll" }}>
+      <div className="flex-1 overflow-scroll">
         <SwipeableStopList
           ref={swipeableList}
           stopTab={stopTab}
           onChangeTab={handleTabChange}
         />
-      </Box>
-    </Paper>
+      </div>
+    </div>
   );
 };
 
 export default BookmarkedStop;
-
-const paperSx: SxProps<Theme> = {
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "auto",
-  width: "100%",
-  flex: 1,
-  backgroundSize: "contain",
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
-};

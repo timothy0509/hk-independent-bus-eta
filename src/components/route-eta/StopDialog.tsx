@@ -1,19 +1,13 @@
 import {
-  BookmarkBorder as BookmarkBorderIcon,
   Bookmark as BookmarkIcon,
-  Close as CloseIcon,
-  NavigationOutlined as DirectionsIcon,
-  PinDropOutlined as MapIcon,
-} from "@mui/icons-material";
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  SxProps,
-  Theme,
-} from "@mui/material";
+  X as CloseIcon,
+  Navigation as DirectionsIcon,
+  MapPin as MapIcon,
+  Plus as BookmarkBorderIcon,
+} from "lucide-react";
+import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { Icon } from "../ui/Icon";
 import { useCallback, useContext, useMemo } from "react";
 import StopRouteList from "../bookmarked-stop/StopRouteList";
 import { Company } from "hk-bus-eta";
@@ -62,50 +56,43 @@ const StopDialog = ({ open, stops, onClose }: StopDialogProps) => {
   }, [openUrl, stopList, stops]);
 
   return (
-    <Dialog open={open} onClose={onClose} sx={rootSx}>
-      <DialogTitle sx={titleSx}>
-        <Box>
-          <IconButton onClick={() => updateSavedStops(stops[0].join("|"))}>
-            {bookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
-          </IconButton>
-          {stopList[stops[0][1]]?.name[language]}
-          &nbsp;&nbsp;
-          <IconButton onClick={handleClickDirection}>
-            <DirectionsIcon />
-          </IconButton>
-          <IconButton onClick={handleClickLocation}>
-            <MapIcon />
-          </IconButton>
-        </Box>
-        <Box>
-          <IconButton onClick={onClose}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-      <DialogContent>
-        <StopRouteList stops={stops} isFocus={true} />
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="p-0">
+        <div className="w-full mt-[90px] h-[calc(100vh-100px)]">
+          <DialogHeader className="bg-background text-primary flex justify-between items-center p-4 border-b">
+            <div className="flex gap-2 items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => updateSavedStops(stops[0].join("|"))}
+              >
+                {bookmarked ? (
+                  <Icon icon={BookmarkIcon} />
+                ) : (
+                  <Icon icon={BookmarkBorderIcon} />
+                )}
+              </Button>
+              <span>{stopList[stops[0][1]]?.name[language]}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleClickDirection}
+              >
+                <Icon icon={DirectionsIcon} />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={handleClickLocation}>
+                <Icon icon={MapIcon} />
+              </Button>
+            </div>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <Icon icon={CloseIcon} />
+            </Button>
+          </DialogHeader>
+          <StopRouteList stops={stops} isFocus={true} />
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
 export default StopDialog;
-
-const rootSx: SxProps<Theme> = {
-  "& .MuiPaper-root": {
-    width: "100%",
-    marginTop: "90px",
-    height: "calc(100vh - 100px)",
-  },
-  "& .MuiDialogContent-root": {
-    padding: 0,
-  },
-};
-
-const titleSx: SxProps<Theme> = {
-  backgroundColor: (theme) => theme.palette.background.default,
-  color: (theme) => theme.palette.primary.main,
-  display: "flex",
-  justifyContent: "space-between",
-};

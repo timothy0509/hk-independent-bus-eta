@@ -1,4 +1,3 @@
-import { Box, SxProps, Theme, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import HomeRouteListDropDown from "./HomeRouteListDropDown";
 import { EtaDb, Location, RouteList, StopList } from "hk-bus-eta";
@@ -53,16 +52,14 @@ const SmartCollectionRouteList = ({
 
   if (collections.length === 0) {
     return (
-      <Box sx={rootSx}>
-        <Typography sx={{ marginTop: 5 }} fontWeight={700}>
-          {t("未有收藏路線")}
-        </Typography>
-      </Box>
+      <div className="flex flex-col gap-2 min-h-[100dvh]">
+        <p className="mt-5 font-bold">{t("未有收藏路線")}</p>
+      </div>
     );
   }
 
   return (
-    <Box sx={rootSx}>
+    <div className="flex flex-col gap-2 min-h-[100dvh]">
       {collections.map(({ name, routes, defaultExpanded }, idx) => (
         <HomeRouteListDropDown
           key={`collection-${idx}`}
@@ -75,12 +72,8 @@ const SmartCollectionRouteList = ({
         (acc, { routes }) =>
           acc || routes.split("|").filter((v) => Boolean(v)).length > 0,
         false
-      ) && (
-        <Typography sx={{ marginTop: 5 }} fontWeight={700}>
-          {t("未有收藏路線")}
-        </Typography>
-      )}
-    </Box>
+      ) && <p className="mt-5 font-bold">{t("未有收藏路線")}</p>}
+    </div>
   );
 };
 
@@ -142,11 +135,4 @@ const getCollections = ({
         geolocation
       ),
     }));
-};
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 2,
-  minHeight: "100dvh",
 };

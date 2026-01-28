@@ -1,10 +1,7 @@
 import { useContext } from "react";
-import { Tabs, Tab, SxProps, Theme } from "@mui/material";
-import {
-  Star as StarIcon,
-  NearMe as NearMeIcon,
-  Bookmark as BookmarkIcon,
-} from "@mui/icons-material";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Icon } from "../ui/Icon";
+import { Star, Navigation as NearMeIcon, Bookmark } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { RouteCollection } from "../../@types/types";
 import CollectionContext from "../../CollectionContext";
@@ -23,41 +20,40 @@ const HomeTabbar = ({ homeTab, onChangeTab }: HomeTabbarProps) => {
   return (
     <Tabs
       value={homeTab}
-      onChange={(_, v) => onChangeTab(v, true)}
-      sx={tabbarSx}
-      variant="scrollable"
-      scrollButtons
-      allowScrollButtonsMobile
+      onValueChange={(v) => onChangeTab(v as HomeTabType, true)}
     >
-      <Tab
-        iconPosition="start"
-        icon={<NearMeIcon />}
-        label={t("附近")}
-        value="nearby"
-        disableRipple
-      />
-      <Tab
-        iconPosition="start"
-        icon={<StarIcon />}
-        label={t("常用")}
-        value="saved"
-        disableRipple
-      />
-      <Tab
-        iconPosition="start"
-        icon={<BookmarkIcon />}
-        label={t("Collections")}
-        value="collections"
-        disableRipple
-      />
-      {collections.map((collection, idx) => (
-        <Tab
-          key={`collection-${idx}`}
-          label={collection.name}
-          value={collection.name}
-          disableRipple
-        />
-      ))}
+      <TabsList className="min-h-[36px] bg-background justify-start w-full overflow-x-auto">
+        <TabsTrigger
+          className="min-w-[85px] min-h-[32px] py-0 data-[state=active]:bg-muted"
+          value="nearby"
+        >
+          <Icon icon={NearMeIcon} className="w-4 h-4" />
+          <span className="ml-1 text-[0.8em]">{t("附近")}</span>
+        </TabsTrigger>
+        <TabsTrigger
+          className="min-w-[85px] min-h-[32px] py-0 data-[state=active]:bg-muted"
+          value="saved"
+        >
+          <Icon icon={Star} className="w-4 h-4" />
+          <span className="ml-1 text-[0.8em]">{t("常用")}</span>
+        </TabsTrigger>
+        <TabsTrigger
+          className="min-w-[85px] min-h-[32px] py-0 data-[state=active]:bg-muted"
+          value="collections"
+        >
+          <Icon icon={Bookmark} className="w-4 h-4" />
+          <span className="ml-1 text-[0.8em]">{t("Collections")}</span>
+        </TabsTrigger>
+        {collections.map((collection, idx) => (
+          <TabsTrigger
+            key={`collection-${idx}`}
+            className="min-w-[85px] min-h-[32px] py-0 data-[state=active]:bg-muted"
+            value={collection.name}
+          >
+            <span className="text-[0.8em]">{collection.name}</span>
+          </TabsTrigger>
+        ))}
+      </TabsList>
     </Tabs>
   );
 };
@@ -79,26 +75,4 @@ export const isHomeTab = (
     }
   }
   return false;
-};
-
-const tabbarSx: SxProps<Theme> = {
-  background: (theme) => theme.palette.background.default,
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    textTransform: "none",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-  [`& .MuiTabs-flexContainer`]: {
-    justifyContent: "flex-start",
-    "& svg": {
-      fontSize: "1rem",
-    },
-    "& .MuiTab-root": {
-      fontSize: "0.8em",
-    },
-  },
 };

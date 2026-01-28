@@ -1,39 +1,31 @@
 import { useContext } from "react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Separator } from "../ui/separator";
+import { cn } from "../../lib/utils";
 import {
-  Avatar,
-  Divider,
-  List,
-  ListItemButton,
-  ListItemAvatar,
-  ListItemText,
-  SxProps,
-  Theme,
-  Slider,
-  ListItem,
-} from "@mui/material";
-import {
-  SwipeUpOutlined as SwipeUpIcon,
-  Battery20 as Battery20Icon,
-  BatteryStd as BatteryStdIcon,
-  Delete as DeleteIcon,
-  Timer as TimerIcon,
-  DarkMode as DarkModeIcon,
-  SettingsBrightness as SettingsBrightnessIcon,
-  WbSunny as WbSunnyIcon,
-  AllInclusive as AllInclusiveIcon,
-  FilterAlt as FilterAltIcon,
-  Vibration as VibrationIcon,
-  DoNotDisturbOn as DoNotDisturbOnIcon,
-  Filter1 as Filter1Icon,
-  Filter7 as Filter7Icon,
-  Sort as SortIcon,
-  HourglassTop as HourglassTopIcon,
-  PushPin as PinIcon,
-  Update as UpdateIcon,
-  UpdateDisabled as UpdateDisabledIcon,
-  FormatSize as FormatSizeIcon,
-  LooksOneRounded as LooksOneRoundedIcon,
-} from "@mui/icons-material";
+  ArrowUp,
+  Battery,
+  BatteryCharging,
+  Trash2,
+  Timer,
+  Moon,
+  SunMedium,
+  Sun,
+  Infinity,
+  Filter,
+  Smartphone,
+  BellOff,
+  Flame,
+  ArrowUpDown,
+  Hourglass,
+  MapPin,
+  RefreshCw,
+  RefreshCwOff,
+  Type,
+  Minimize2,
+} from "lucide-react";
+import { Label } from "../ui/label";
+import { Slider } from "../ui/slider";
 import { ETA_FORMAT_STR } from "../../constants";
 import AppContext from "../../context/AppContext";
 import { vibrate } from "../../utils";
@@ -73,241 +65,225 @@ const OptionsList = ({ goToManage }: OptionsListProps) => {
   const { t } = useTranslation();
 
   return (
-    <List sx={ListSx}>
-      <ListItemButton
+    <div className="py-0">
+      <SettingItem
+        icon={<ArrowUp className="h-5 w-5" />}
+        primary={t("管理收藏")}
         onClick={() => {
           vibrate(vibrateDuration);
           goToManage();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <SwipeUpIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={t("管理收藏")} />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={
+          isRouteFilter ? (
+            <Filter className="h-5 w-5" />
+          ) : (
+            <Infinity className="h-5 w-5" />
+          )
+        }
+        primary={t("路線篩選")}
+        secondary={t(isRouteFilter ? "只顯示現時路線" : "顯示所有路線")}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleRouteFilter();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            {isRouteFilter ? <FilterAltIcon /> : <AllInclusiveIcon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("路線篩選")}
-          secondary={t(isRouteFilter ? "只顯示現時路線" : "顯示所有路線")}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={<ArrowUpDown className="h-5 w-5" />}
+        primary={t("巴士排序")}
+        secondary={t(busSortOrder)}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleBusSortOrder();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <SortIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={t("巴士排序")} secondary={t(busSortOrder)} />
-      </ListItemButton>
-      <ListItemButton onClick={() => {}}>
-        <ListItemAvatar>
-          <Avatar>
-            <HourglassTopIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("更新頻率")}
-          secondary={
-            <Slider
-              step={1}
-              min={5}
-              max={60}
-              value={refreshInterval / 1000}
-              valueLabelDisplay="auto"
-              size="small"
-              valueLabelFormat={(v: number) => `${v}s`}
-              onChange={(_, v: number | number[]) =>
-                updateRefreshInterval((v as number) * 1000)
-              }
-            />
-          }
-        />
-      </ListItemButton>
-      <Divider />
-      <ListItemButton
+      />
+      <div className="flex items-center gap-4 p-4">
+        <Avatar>
+          <AvatarFallback>
+            <Hourglass className="h-5 w-5" />
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <Label>{t("更新頻率")}</Label>
+          </div>
+          <Slider
+            step={1}
+            min={5}
+            max={60}
+            value={[refreshInterval / 1000]}
+            onValueChange={([v]: number[]) => updateRefreshInterval(v * 1000)}
+            className="mt-2"
+          />
+          <p className="text-sm text-muted-foreground mt-1">
+            {refreshInterval / 1000}s
+          </p>
+        </div>
+      </div>
+      <Separator />
+      <SettingItem
+        icon={
+          colorMode === "system" ? (
+            <SunMedium className="h-5 w-5" />
+          ) : colorMode === "light" ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )
+        }
+        primary={t("外觀")}
+        secondary={t(`color-${colorMode}`)}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleColorMode();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            {colorMode === "system" && <SettingsBrightnessIcon />}
-            {colorMode === "light" && <WbSunnyIcon />}
-            {colorMode === "dark" && <DarkModeIcon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={t("外觀")} secondary={t(`color-${colorMode}`)} />
-      </ListItemButton>
-      <ListItem>
-        <ListItemAvatar>
-          <Avatar>
-            <FormatSizeIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <FontSizeSlider />
-      </ListItem>
-      <ListItemButton
+      />
+      <div className="flex items-center gap-4 p-4">
+        <Avatar>
+          <AvatarFallback>
+            <Type className="h-5 w-5" />
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <FontSizeSlider />
+        </div>
+      </div>
+      <SettingItem
+        icon={
+          numPadOrder[0] === "1" ? (
+            <Flame className="h-5 w-5" />
+          ) : (
+            <Minimize2 className="h-5 w-5" />
+          )
+        }
+        primary={t("鍵盤格式")}
+        secondary={numPadOrder}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleNumPadOrder();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            {numPadOrder[0] === "1" ? <Filter1Icon /> : <Filter7Icon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText primary={t("鍵盤格式")} secondary={numPadOrder} />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={<Timer className="h-5 w-5" />}
+        primary={t("報時格式")}
+        secondary={t(ETA_FORMAT_STR[etaFormat])}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleEtaFormat();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <TimerIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("報時格式")}
-          secondary={t(ETA_FORMAT_STR[etaFormat])}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={<MapPin className="h-5 w-5" />}
+        primary={t("注釋預定班次")}
+        secondary={t(annotateScheduled ? "開啟" : "關閉")}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleAnnotateScheduled();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <PinIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("注釋預定班次")}
-          secondary={t(annotateScheduled ? "開啟" : "關閉")}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={<Type className="h-5 w-5" />}
+        primary={t("月台顯示格式")}
+        secondary={t(platformMode ? "➊" : "①")}
         onClick={() => {
           vibrate(vibrateDuration);
           togglePlatformMode();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <LooksOneRoundedIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("月台顯示格式")}
-          secondary={t(platformMode ? "➊" : "①")}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={
+          energyMode ? (
+            <Battery className="h-5 w-5" />
+          ) : (
+            <BatteryCharging className="h-5 w-5" />
+          )
+        }
+        primary={t("省電模式")}
+        secondary={t(!energyMode ? "開啟地圖功能" : "關閉地圖功能")}
         onClick={() => {
           vibrate(vibrateDuration);
           toggleEnergyMode();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>{energyMode ? <Battery20Icon /> : <BatteryStdIcon />}</Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("省電模式")}
-          secondary={t(!energyMode ? "開啟地圖功能" : "關閉地圖功能")}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={
+          isRecentSearchShown ? (
+            <RefreshCw className="h-5 w-5" />
+          ) : (
+            <RefreshCwOff className="h-5 w-5" />
+          )
+        }
+        primary={t("搜尋記錄")}
+        secondary={t(isRecentSearchShown ? "開啟" : "關閉")}
         onClick={() => {
-          vibrate(vibrateDuration ^ 1); // tricky, vibrate when switch on and vice versa
+          vibrate(vibrateDuration ^ 1);
           toggleIsRecentSearchShown();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            {isRecentSearchShown ? <UpdateIcon /> : <UpdateDisabledIcon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("搜尋記錄")}
-          secondary={t(isRecentSearchShown ? "開啟" : "關閉")}
-        />
-      </ListItemButton>
-      <ListItemButton
+      />
+      <SettingItem
+        icon={
+          vibrateDuration ? (
+            <Smartphone className="h-5 w-5" />
+          ) : (
+            <BellOff className="h-5 w-5" />
+          )
+        }
+        primary={t("按鍵震動")}
+        secondary={t(vibrateDuration ? "開啟" : "關閉")}
         onClick={() => {
-          vibrate(vibrateDuration ^ 1); // tricky, vibrate when switch on and vice versa
+          vibrate(vibrateDuration ^ 1);
           toggleVibrateDuration();
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            {vibrateDuration ? <VibrationIcon /> : <DoNotDisturbOnIcon />}
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("按鍵震動")}
-          secondary={t(vibrateDuration ? "開啟" : "關閉")}
-        />
-      </ListItemButton>
-      <Divider />
-      <ListItemButton
+      />
+      <Separator />
+      <SettingItem
+        icon={<Trash2 className="h-5 w-5" />}
+        primary={t("一鍵清空用戶記錄")}
+        secondary={t("包括鎖定和常用報時")}
         onClick={() => {
           vibrate(vibrateDuration);
           if (window.confirm(t("確定清空？"))) {
             resetUsageRecord();
           }
         }}
-      >
-        <ListItemAvatar>
-          <Avatar>
-            <DeleteIcon />
-          </Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={t("一鍵清空用戶記錄")}
-          secondary={t("包括鎖定和常用報時")}
-        />
-      </ListItemButton>
-    </List>
+      />
+    </div>
   );
 };
 
 export default OptionsList;
 
-const ListSx: SxProps<Theme> = {
-  "& .MuiAvatar-colorDefault": {
-    color: (theme) =>
-      theme.palette.mode === "dark"
-        ? theme.palette.background.default
-        : "white",
-  },
-  "& .MuiSlider-colorPrimary": {
-    color: (theme) =>
-      theme.palette.mode === "dark"
-        ? "rgba(255, 255, 255, 0.7)"
-        : "rgba(0, 0, 0, 0.6)",
-  },
-  overflow: "scroll",
+interface SettingItemProps {
+  icon: React.ReactNode;
+  primary: string;
+  secondary?: string;
+  onClick?: () => void;
+}
+
+const SettingItem = ({
+  icon,
+  primary,
+  secondary,
+  onClick,
+}: SettingItemProps) => {
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-4 p-4",
+        onClick && "cursor-pointer hover:bg-muted/50"
+      )}
+      onClick={onClick}
+    >
+      <Avatar>
+        <AvatarFallback>{icon}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1">
+        <p className="text-sm font-medium">{primary}</p>
+        {secondary && (
+          <p className="text-sm text-muted-foreground">{secondary}</p>
+        )}
+      </div>
+    </div>
+  );
 };

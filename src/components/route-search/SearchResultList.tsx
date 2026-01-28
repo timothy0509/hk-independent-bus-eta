@@ -2,13 +2,10 @@ import { useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  ListItemText,
-  Typography,
-  SxProps,
-  Theme,
-} from "@mui/material";
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 import RouteNo from "../route-board/RouteNo";
 import TimeReport from "../route-eta/TimeReport";
 import useLanguage from "../../hooks/useTranslation";
@@ -63,98 +60,61 @@ const SearchResultList = ({
 
   return (
     <Accordion
-      TransitionProps={{ unmountOnExit: true }}
-      sx={rootSx}
-      onChange={() => handleRouteClick(idx)}
-      expanded={expanded}
+      type="single"
+      collapsible
+      value={expanded ? `item-${idx}` : ""}
+      onValueChange={(value) => {
+        if (value === `item-${idx}`) {
+          handleRouteClick(idx);
+        } else if (expanded) {
+          handleRouteClick(idx);
+        }
+      }}
     >
-      <AccordionSummary sx={summaryRootSx}>
-        <ListItemText
-          primary={routes.map((selectedRoute, routeIdx) => {
-            const { routeId } = selectedRoute;
-            const { route, serviceType } = routeList[routeId];
+      <AccordionItem value={`item-${idx}`} className="border border-border">
+        <AccordionTrigger className="px-4 py-2 bg-muted/30 hover:bg-muted/50 data-[state=open]:border-b border-border">
+          <div className="flex flex-col items-start w-full">
+            <div className="flex flex-wrap gap-1">
+              {routes.map((selectedRoute, routeIdx) => {
+                const { routeId } = selectedRoute;
+                const { route, serviceType } = routeList[routeId];
 
-            return (
-              <span key={`search-${idx}-${routeIdx}`}>
-                <RouteNo routeNo={route} />
-                {parseInt(serviceType, 10) >= 2 && (
-                  <Typography variant="caption">{t("特別班")}</Typography>
-                )}
-              </span>
-            );
-          })}
-          secondary={getStopString(routes)}
-          sx={listItemTextSx}
-        />
-      </AccordionSummary>
-      <AccordionDetails sx={detailsSx}>
-        {routes.map((selectedRoute, routeIdx) => (
-          <TimeReport
-            key={`timereport-${idx}-${routeIdx}`}
-            routeId={selectedRoute.routeId.toUpperCase()}
-            seq={selectedRoute.on + (stopIdx ? stopIdx[routeIdx] : 0)}
-            containerSx={timeReportSx}
-            showStopName={true}
-          />
-        ))}
-      </AccordionDetails>
+                return (
+                  <span
+                    key={`search-${idx}-${routeIdx}`}
+                    className="inline-flex items-center"
+                  >
+                    <RouteNo routeNo={route} />
+                    {parseInt(serviceType, 10) >= 2 && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        {t("特別班")}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+            <span className="text-sm text-muted-foreground mt-1">
+              {getStopString(routes)}
+            </span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent className="px-4 py-2">
+          <div className="flex flex-wrap gap-2">
+            {routes.map((selectedRoute, routeIdx) => (
+              <TimeReport
+                key={`timereport-${idx}-${routeIdx}`}
+                routeId={selectedRoute.routeId.toUpperCase()}
+                seq={selectedRoute.on + (stopIdx ? stopIdx[routeIdx] : 0)}
+                className="w-[50%]"
+                showStopName={true}
+              />
+            ))}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
     </Accordion>
   );
 };
 
 export default SearchResultList;
-
-const rootSx: SxProps<Theme> = {
-  border: "1px solid rgba(0, 0, 0, .125)",
-  boxShadow: "none",
-  "&:not(:last-child)": {
-    borderBottom: 0,
-  },
-  "&:before": {
-    display: "none",
-  },
-  "&.Mui-expanded": {
-    margin: "auto",
-  },
-};
-
-const summaryRootSx: SxProps<Theme> = {
-  backgroundColor: (theme) =>
-    theme.palette.mode === "dark"
-      ? theme.palette.background.default
-      : "rgba(0, 0, 0, .03)",
-  borderBottom: "1px solid rgba(0, 0, 0, .125)",
-  marginBottom: -1,
-  minHeight: 44,
-  "&.Mui-expanded": {
-    minHeight: 44,
-  },
-  "& .MuiAccordionSummary-content": {
-    margin: "8px 0",
-    flexDirection: "column",
-    [`&.Mui-expanded`]: {
-      margin: "8px 0",
-    },
-  },
-};
-
-const detailsSx: SxProps<Theme> = {
-  px: (theme) => theme.spacing(2),
-  py: (theme) => theme.spacing(1),
-  display: "flex",
-};
-
-const timeReportSx: SxProps<Theme> = {
-  width: "50%",
-};
-
-const listItemTextSx: SxProps<Theme> = {
-  "& .MuiListItemText-primary > span": {
-    width: "50%",
-    display: "inline-block",
-    "& > span": {
-      fontSize: "0.6rem",
-      marginLeft: "8px",
-    },
-  },
-};

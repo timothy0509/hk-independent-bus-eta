@@ -1,9 +1,6 @@
-import { SxProps, Tab, Tabs, Theme } from "@mui/material";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useTranslation } from "react-i18next";
-import {
-  TaskAlt as TaskAltIcon,
-  MonitorHeartOutlined as MonitorHeartOutlinedIcon,
-} from "@mui/icons-material";
+import { CheckCircle, Activity } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import useLanguage from "../../hooks/useTranslation";
 
@@ -16,22 +13,25 @@ const EmotionTabbar = () => {
   return (
     <Tabs
       value={tab ?? "check-in"}
-      onChange={(_, v) => navigate(`/${language}/emotion/${v}`)}
-      sx={tabbarSx}
-      centered
+      onValueChange={(v) => navigate(`/${language}/emotion/${v}`)}
+      className="bg-background min-h-[36px]"
     >
-      <Tab
-        label={t("Check in")}
-        value="check-in"
-        icon={<TaskAltIcon />}
-        iconPosition="start"
-      />
-      <Tab
-        label={t("Emotion Chart")}
-        value="chart"
-        icon={<MonitorHeartOutlinedIcon />}
-        iconPosition="start"
-      />
+      <TabsList className="h-9 min-h-9 justify-start">
+        <TabsTrigger
+          value="check-in"
+          className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+        >
+          <CheckCircle className="mr-2 h-4 w-4" />
+          {t("Check in")}
+        </TabsTrigger>
+        <TabsTrigger
+          value="chart"
+          className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground"
+        >
+          <Activity className="mr-2 h-4 w-4" />
+          {t("Emotion Chart")}
+        </TabsTrigger>
+      </TabsList>
     </Tabs>
   );
 };
@@ -39,19 +39,3 @@ const EmotionTabbar = () => {
 export default EmotionTabbar;
 
 export type EmotionTabType = "check in" | "chart";
-
-const tabbarSx: SxProps<Theme> = {
-  background: (theme) => theme.palette.background.default,
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    textTransform: "none",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-  [`& .MuiTabs-flexContainer`]: {
-    justifyContent: "flex-start",
-  },
-};

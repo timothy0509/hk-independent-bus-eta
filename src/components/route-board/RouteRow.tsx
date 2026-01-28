@@ -1,17 +1,10 @@
 import React, { MouseEventHandler } from "react";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  IconButton,
-  SxProps,
-  Theme,
-} from "@mui/material";
 import { Link } from "react-router-dom";
 import RouteTerminus from "./RouteTerminus";
 import RouteNoCompany from "./RouteNoCompany";
-import { Close as CloseIcon } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
+import { Icon } from "../ui/Icon";
+import { X as CloseIcon } from "lucide-react";
+import { cn } from "../../lib/utils";
 import { RouteListEntry } from "hk-bus-eta";
 import useLanguage from "../../hooks/useTranslation";
 
@@ -30,40 +23,25 @@ const RouteRow = ({ route, onClick, style, onRemove }: RouteRowProps) => {
       // for SEO, not for click
       to={`/${language}/route/${route[0].toLowerCase()}`}
       style={style}
+      className={cn(
+        "flex items-center h-full border-b border-solid",
+        "dark:border-neutral-900 border-slate-200"
+      )}
     >
-      <Card variant="outlined" key={route[0]} square sx={rootSx}>
-        <CardActionArea onClick={onClick}>
-          <CardContent sx={cardContentSx}>
-            <RouteNoCompany route={route} />
-            <RouteTerminus terminus={route[1]} />
-          </CardContent>
-        </CardActionArea>
-        {onRemove && (
-          <IconButton onClick={onRemove}>
-            <CloseIcon />
-          </IconButton>
-        )}
-      </Card>
+      <button
+        onClick={onClick}
+        className="w-full grid grid-cols-[25%_65%] py-0.5 px-2 items-center"
+      >
+        <RouteNoCompany route={route} />
+        <RouteTerminus terminus={route[1]} />
+      </button>
+      {onRemove && (
+        <button onClick={onRemove}>
+          <Icon icon={CloseIcon} />
+        </button>
+      )}
     </Link>
   );
 };
 
 export default RouteRow;
-
-const rootSx: SxProps<Theme> = {
-  border: "none",
-  display: "flex",
-  alignItems: "center",
-  height: "100%",
-  borderBottomWidth: "1px",
-  borderBottomStyle: "solid",
-  borderBlockColor: (t) => (t.palette.mode === "dark" ? grey[900] : grey[200]),
-};
-
-const cardContentSx: SxProps<Theme> = {
-  display: "grid",
-  gridTemplateColumns: "25% 65%",
-  py: 0.5,
-  px: 2,
-  alignItems: "center",
-};

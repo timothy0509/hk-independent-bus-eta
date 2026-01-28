@@ -1,26 +1,14 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Button,
-  IconButton,
-  MenuItem,
-  SxProps,
-  TextField,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Box } from "../../ui/box";
+import { Button } from "../../ui/Button";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileTimePicker as TimePicker } from "@mui/x-date-pickers/MobileTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import {
-  AddCircle as AddIcon,
-  RemoveCircleOutline as RemoveCircleOutlineIcon,
-} from "@mui/icons-material";
+import { Icon } from "../../ui/Icon";
 import dayjs from "dayjs";
-
-// Context
 import CollectionContext from "../../../CollectionContext";
+import { PlusCircle, MinusCircle } from "lucide-react";
 
 const CollectionSchedule = () => {
   const { t } = useTranslation();
@@ -64,43 +52,44 @@ const CollectionSchedule = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={rootSx}>
+      <Box className="flex flex-col gap-1.5 text-center text-[0.8em]">
         {newCollection[newCollectionIdx].schedules.length > 0 ? (
           <>
             {newCollection[newCollectionIdx].schedules.map(
               (daySchedule, idx) => (
-                <Box key={`schedule-${idx}`} sx={daySx}>
-                  <IconButton
-                    size="small"
+                <Box
+                  key={`schedule-${idx}`}
+                  className="flex items-center justify-between gap-0.5"
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => removeCollectionSchedule(idx)}
                   >
-                    <RemoveCircleOutlineIcon />
-                  </IconButton>
-                  <TextField
-                    variant="standard"
+                    <Icon icon={MinusCircle} />
+                  </Button>
+                  <select
                     value={daySchedule.day}
-                    select
-                    size="small"
                     onChange={({ target: { value } }) =>
                       updateCollectionSchedule(idx, "day", parseInt(value))
                     }
+                    className="h-8 rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
-                    {/* Start with mon-sun, then holiday */}
                     {[...Array(7).keys(), -1]
                       .map((i) => (i === -1 ? -1 : (i + 1) % 7))
                       .map((_weekday) => (
-                        <MenuItem
+                        <option
                           key={`option-${idx}-${_weekday}`}
                           value={_weekday}
                         >
                           {_weekday === -1
                             ? t("public-holiday")
                             : t(`weekday-${_weekday}`)}
-                        </MenuItem>
+                        </option>
                       ))}
-                  </TextField>
+                  </select>
                   <TimePicker
-                    sx={{ flex: 0.45 }}
+                    className="flex-[0.45]"
                     slotProps={{
                       textField: {
                         size: "small",
@@ -117,9 +106,9 @@ const CollectionSchedule = () => {
                       })
                     }
                   />
-                  -
+                  <span className="px-1">-</span>
                   <TimePicker
-                    sx={{ flex: 0.45 }}
+                    className="flex-[0.45]"
                     slotProps={{
                       textField: {
                         size: "small",
@@ -141,13 +130,11 @@ const CollectionSchedule = () => {
             )}
           </>
         ) : (
-          <Typography sx={{ marginTop: 5 }} fontWeight={700}>
-            {t("missing_schedule")}
-          </Typography>
+          <p className="mt-5 text-sm font-bold">{t("missing_schedule")}</p>
         )}
 
-        <Button onClick={() => addCollectionSchedule()}>
-          <AddIcon />
+        <Button onClick={() => addCollectionSchedule()} variant="ghost">
+          <Icon icon={PlusCircle} />
         </Button>
       </Box>
     </LocalizationProvider>
@@ -155,18 +142,3 @@ const CollectionSchedule = () => {
 };
 
 export default CollectionSchedule;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 1.5,
-  fontSize: "0.8em !important",
-  textAlign: "center",
-};
-
-const daySx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 0.5,
-};

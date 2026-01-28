@@ -1,4 +1,4 @@
-import { Box, Paper, SxProps, Theme } from "@mui/material";
+import { Box } from "../components/ui/box";
 import CheckIn from "../components/emotion/CheckIn";
 import { useParams } from "react-router-dom";
 import { Suspense } from "react";
@@ -9,27 +9,16 @@ const EmotionPage = () => {
   const { tab } = useParams();
 
   return (
-    <Paper sx={paperSx}>
+    <div className="text-center flex flex-col overflow-none w-full h-full bg-background">
       <EmotionTabbar />
       <Suspense fallback={<></>}>
-        <Box overflow="auto">
+        <Box className="overflow-auto">
           {(!tab || tab === "check-in") && <CheckIn />}
           {tab === "chart" && <EmotionChart />}
         </Box>
       </Suspense>
-    </Paper>
+    </div>
   );
 };
 
 export default EmotionPage;
-
-const paperSx: SxProps<Theme> = {
-  background: (theme) =>
-    theme.palette.mode === "dark" ? theme.palette.background.default : "white",
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "none",
-  width: "100%",
-  height: "100%",
-};

@@ -5,12 +5,13 @@ import {
   bindKeyboard,
   SlideRendererCallback,
 } from "react-swipeable-views-utils";
-import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import memorize from "memoize-one";
 import { Trans, useTranslation } from "react-i18next";
-import { Box, SxProps, Theme, Typography } from "@mui/material";
+import { Icon } from "../ui/Icon";
+import { Frown as SentimentVeryDissatisfiedIcon } from "lucide-react";
+import { Typography } from "../ui/Typography";
 
 import AppContext from "../../context/AppContext";
 import { isHoliday, isRouteAvaliable } from "../../timetable";
@@ -131,46 +132,48 @@ const SwipeableRoutesBoard = ({
         ) : (
           <AutoSizer>
             {({ width }) => (
-              <Box sx={noResultSx} width={width}>
-                <Box
-                  display="flex"
-                  alignItems="center"
-                  flexDirection="column"
-                  gap={1}
-                >
-                  {availableBoardTab[index] !== "recent" ? (
-                    <>
-                      <Box display="flex" alignItems="center">
-                        <SentimentVeryDissatisfiedIcon fontSize="small" />
+              <div
+                className="h-[120px] flex flex-col items-center justify-center gap-2"
+                style={{ width }}
+              >
+                {availableBoardTab[index] !== "recent" ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        icon={SentimentVeryDissatisfiedIcon}
+                        className="text-3xl"
+                      />
+                      <Typography variant="h6">
+                        &quot;{searchRoute}&quot;
+                      </Typography>
+                      <Typography variant="h6">
+                        {t("route-search-no-result")}
+                      </Typography>
+                    </div>
+                    <Typography variant="body1">
+                      {t("suggest-update-database")}
+                    </Typography>
+                  </>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        icon={SentimentVeryDissatisfiedIcon}
+                        className="text-3xl"
+                      />
+                      {searchRoute.length > 0 && (
                         <Typography variant="h6">
                           &quot;{searchRoute}&quot;
                         </Typography>
-                        <Typography variant="h6">
-                          {t("route-search-no-result")}
-                        </Typography>
-                      </Box>
-                      <Typography variant="body1">
-                        {t("suggest-update-database")}
-                      </Typography>
-                    </>
-                  ) : (
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <Box display="flex" alignItems="center">
-                        <SentimentVeryDissatisfiedIcon fontSize="small" />
-                        {searchRoute.length > 0 && (
-                          <Typography variant="h6">
-                            &quot;{searchRoute}&quot;
-                          </Typography>
-                        )}
-                      </Box>
-                      <Typography variant="h6">
-                        {t("no-recent-search")}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
+                      )}
+                    </div>
+                    <Typography variant="h6">
+                      {t("no-recent-search")}
+                    </Typography>
+                  </div>
+                )}
                 {availableBoardTab[index] !== "all" && (
-                  <Box display="flex">
+                  <div className="flex">
                     <Typography variant="h6">
                       <Trans
                         i18nKey="tap-here-to-search-all-routes"
@@ -179,16 +182,16 @@ const SwipeableRoutesBoard = ({
                             <Typography
                               variant="h6"
                               component="span"
-                              sx={clickableLinkSx}
+                              className="underline inline cursor-pointer"
                               onClick={() => onChangeTab("all")}
                             />
                           ),
                         }}
                       />
                     </Typography>
-                  </Box>
+                  </div>
                 )}
-              </Box>
+              </div>
             )}
           </AutoSizer>
         )}
@@ -201,7 +204,7 @@ const SwipeableRoutesBoard = ({
     () => (
       <>
         {navigator.userAgent === "prerendering" ? (
-          <Box sx={prerenderListSx}>
+          <div className="h-full overflow-y-scroll">
             {coItemDataList[0].routeList.map((_: any, idx: number) => (
               <RouteRowList
                 data={coItemDataList[0]}
@@ -210,7 +213,7 @@ const SwipeableRoutesBoard = ({
                 style={null} // required by react-window
               />
             ))}
-          </Box>
+          </div>
         ) : (
           <VirtualizeSwipeableViews
             index={availableBoardTab.indexOf(boardTab)}
@@ -251,27 +254,3 @@ const BOARD_TAB: BoardTabType[] = [
   "mtr",
   "ferry",
 ];
-
-const prerenderListSx: SxProps<Theme> = {
-  height: "100%",
-  overflowY: "scroll",
-};
-
-const noResultSx: SxProps<Theme> = {
-  height: "120px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  [`& .MuiSvgIcon-root`]: {
-    fontSize: "3em",
-    mr: 2,
-  },
-  gap: 2,
-};
-
-const clickableLinkSx: SxProps<Theme> = {
-  textDecoration: "underline",
-  display: "inline",
-  cursor: "pointer",
-};

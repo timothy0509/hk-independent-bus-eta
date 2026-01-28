@@ -1,22 +1,16 @@
 import { useCallback, useContext, useMemo, useState } from "react";
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  IconButton,
-  SxProps,
-  Tab,
-  Tabs,
-  TextField,
-  Theme,
-} from "@mui/material";
+import { Box } from "../../ui/box";
+import { Button } from "../../ui/Button";
 import { useTranslation } from "react-i18next";
-import { DeleteForever as DeleteForeverIcon } from "@mui/icons-material";
+import { Icon } from "../../ui/Icon";
 import CollectionSchedule from "./CollectionSchedule";
 import CollectionRoute from "./CollectionRoute";
 import CollectionContext from "../../../CollectionContext";
+import { Dialog, DialogContent, DialogHeader } from "../../ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
+import { Input } from "../../ui/input";
 import { RouteCollection } from "../../../@types/types";
+import { Trash2 } from "lucide-react";
 
 const CollectionDialog = () => {
   const { t } = useTranslation();
@@ -51,7 +45,6 @@ const CollectionDialog = () => {
     }
   }, [removeCollection, collectionIdx, collection, t]);
 
-  // collections state hasn't updated when added new collection, need to add the following
   if (collectionIdx === null || collection === undefined) {
     return null;
   }
@@ -59,83 +52,53 @@ const CollectionDialog = () => {
   return (
     <Dialog
       open={collectionIdx !== null}
-      onClose={() => {
-        toggleCollectionDialog(null);
+      onOpenChange={(open: boolean) => {
+        if (!open) toggleCollectionDialog(null);
       }}
-      fullWidth
     >
-      <DialogContent sx={contentContainerSx}>
-        <TextField
-          id="collection-input"
-          variant="standard"
-          value={collection.name}
-          onChange={({ target: { value } }) => updateCollectionName(value)}
-          disabled={collectionIdx === -1}
-          fullWidth
-        />
-        <Tabs
-          value={tab}
-          onChange={(_, value) => changeTab(value)}
-          sx={tabbarSx}
-        >
-          <Tab value="routes" label={t("路線")} />
-          <Tab value="time" label={t("顯示時間")} />
-        </Tabs>
-        <Box sx={mainSx}>
-          {tab === "routes" && <CollectionRoute />}
-          {tab === "time" && <CollectionSchedule />}
-        </Box>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <div className="flex w-full items-center justify-between pb-2">
+            <Input
+              id="collection-input"
+              value={collection.name}
+              onChange={({ target: { value } }) => updateCollectionName(value)}
+              disabled={collectionIdx === -1}
+              className="flex-1"
+            />
+            {collectionIdx !== -1 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleCollectionRemoval}
+                className="ml-2 opacity-30 hover:opacity-100"
+              >
+                <Icon icon={Trash2} />
+              </Button>
+            )}
+          </div>
+          <Tabs
+            value={tab}
+            onValueChange={(value: any) => changeTab(value)}
+            className="w-full"
+          >
+            <TabsList className="h-9 min-h-8 bg-muted">
+              <TabsTrigger value="routes" className="min-h-8">
+                {t("路線")}
+              </TabsTrigger>
+              <TabsTrigger value="time" className="min-h-8">
+                {t("顯示時間")}
+              </TabsTrigger>
+            </TabsList>
+            <Box className="h-[50vh] overflow-y-auto pr-1 [&::-webkit-scrollbar]:hidden">
+              {tab === "routes" && <CollectionRoute />}
+              {tab === "time" && <CollectionSchedule />}
+            </Box>
+          </Tabs>
+        </DialogHeader>
       </DialogContent>
-      {collectionIdx !== -1 && (
-        <DialogActions sx={actionSx}>
-          <IconButton onClick={handleCollectionRemoval} sx={deleteSx}>
-            <DeleteForeverIcon />
-          </IconButton>
-        </DialogActions>
-      )}
     </Dialog>
   );
 };
 
 export default CollectionDialog;
-
-const contentContainerSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 1,
-};
-
-const mainSx: SxProps<Theme> = {
-  height: "50vh",
-  pr: 1,
-  overflow: "scroll",
-  "&::-webkit-scrollbar": {
-    display: "none",
-  },
-};
-
-const actionSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "flex-start",
-};
-
-const deleteSx: SxProps<Theme> = {
-  opacity: 0.3,
-  "&:hover": {
-    opacity: 1,
-  },
-};
-
-const tabbarSx: SxProps<Theme> = {
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-  [`& .MuiTabs-flexContainer`]: {
-    justifyContent: "center",
-  },
-};

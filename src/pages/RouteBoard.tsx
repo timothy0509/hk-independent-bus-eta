@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState, useCallback } from "react";
 import AppContext from "../context/AppContext";
-import { Box } from "@mui/material";
 import RouteInputPad from "../components/route-board/RouteInputPad";
 import { useTranslation } from "react-i18next";
 import { setSeoHeader } from "../utils";
@@ -38,16 +37,10 @@ const RouteList = ({ boardTab, setBoardTab }: RouteListProps) => {
   );
 
   return (
-    <Box
-      sx={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="flex-1 flex flex-col">
       <BoardTabbar boardTab={boardTab} onChangeTab={handleTabChange} />
       <SwipeableRoutesBoard boardTab={boardTab} onChangeTab={handleTabChange} />
-    </Box>
+    </div>
   );
 };
 
@@ -66,35 +59,18 @@ const RouteBoard = () => {
   }, []);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column-reverse",
-        height: "100%",
-      }}
-    >
-      <Box
-        sx={{
-          height: "auto",
-          maxHeight: "100%",
-          display: windowHeight > 525 || isSearching ? "flex" : "none",
-          flexDirection: "column",
-          overflowY: "scroll",
-        }}
+    <div className="flex flex-col-reverse h-full">
+      <div
+        className={`h-auto max-h-[100%] flex flex-col overflow-y-scroll ${
+          windowHeight > 525 || isSearching ? "flex" : "hidden"
+        }`}
       >
         <RouteInputPad boardTab={boardTab} />
-      </Box>
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          overflowY: "scroll",
-        }}
-      >
+      </div>
+      <div className="flex-1 flex flex-col overflow-y-scroll">
         <RouteList boardTab={boardTab} setBoardTab={setBoardTab} />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

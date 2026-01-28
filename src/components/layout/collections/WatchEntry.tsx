@@ -1,17 +1,14 @@
 import { useCallback, useContext } from "react";
-import {
-  Avatar,
-  Box,
-  Checkbox,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
-import { Watch as WatchIcon, Launch as LaunchIcon } from "@mui/icons-material";
+import { Avatar, AvatarFallback } from "../../ui/avatar";
+import { Checkbox } from "../../ui/checkbox";
+import { Box } from "../../ui/box";
+import { Typography } from "../../ui/Typography";
+import { Icon } from "../../ui/Icon";
 import { useTranslation } from "react-i18next";
 import ReactNativeContext from "../../../context/ReactNativeContext";
 import CollectionContext from "../../../CollectionContext";
 import DbContext from "../../../context/DbContext";
+import { Watch } from "lucide-react";
 
 const WatchEntry = () => {
   const { collectionDrawerRoute } = useContext(CollectionContext);
@@ -44,45 +41,25 @@ const WatchEntry = () => {
   }, [os, collectionDrawerRoute, routeList]);
 
   return (
-    <Box sx={collectionSx}>
-      <Box sx={leftContainerSx} onClick={handleClick}>
+    <Box className="flex flex-1 justify-between">
+      <Box
+        className="flex flex-1 cursor-pointer items-center gap-2"
+        onClick={handleClick}
+      >
         <Avatar>
-          <WatchIcon />
+          <AvatarFallback className="bg-primary text-primary-foreground">
+            <Icon icon={Watch} />
+          </AvatarFallback>
         </Avatar>
-        <Box sx={nameContainerSx}>
+        <Box className="flex flex-col">
           <Typography variant="body1">{t("智能手錶應用程式")}</Typography>
         </Box>
       </Box>
-      <Box>
-        <Checkbox icon={<LaunchIcon />} checked={false} onClick={handleClick} />
+      <Box className="flex">
+        <Checkbox checked={false} onClick={handleClick} />
       </Box>
     </Box>
   );
 };
 
 export default WatchEntry;
-
-const collectionSx: SxProps<Theme> = {
-  flex: 1,
-  display: "flex",
-  justifyContent: "space-between",
-};
-
-const leftContainerSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  gap: 2,
-  flex: 1,
-  "& .MuiAvatar-colorDefault": {
-    color: (theme) =>
-      theme.palette.mode === "dark"
-        ? theme.palette.background.default
-        : "white",
-  },
-  cursor: "pointer",
-};
-
-const nameContainerSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-};

@@ -1,17 +1,11 @@
-import {
-  Box,
-  SxProps,
-  Theme,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { Box } from "../ui/box";
+import { Typography } from "../ui/Typography";
+import { ToggleButton, ToggleButtonGroup } from "../ui/toggle-button";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_SEARCH_RANGE_OPTIONS, getDistanceWithUnit } from "../../utils";
 import { useContext, useState } from "react";
 import AppContext from "../../context/AppContext";
 import RangeMapDialog from "./RangeMapDialog";
-import { grey } from "@mui/material/colors";
 
 const SearchRangeController = () => {
   const { t } = useTranslation();
@@ -19,33 +13,31 @@ const SearchRangeController = () => {
   const [open, setOpen] = useState<boolean>(false);
 
   return (
-    <Box sx={rootSx}>
+    <Box className="sticky top-0 flex justify-around items-center flex-wrap list-none px-0 py-1 m-0 rounded-none text-sm border-b border-border">
       <Typography variant="caption">{t("搜尋範圍（米）")}:</Typography>
       <ToggleButtonGroup
         value={
           DEFAULT_SEARCH_RANGE_OPTIONS.includes(searchRange)
-            ? searchRange
+            ? String(searchRange)
             : "custom"
         }
         onChange={(_, value) => {
-          if (DEFAULT_SEARCH_RANGE_OPTIONS.includes(value)) {
-            setSearchRange(value);
+          if (value && DEFAULT_SEARCH_RANGE_OPTIONS.includes(Number(value))) {
+            setSearchRange(Number(value));
           } else {
             setOpen(true);
           }
         }}
         aria-label="search range"
-        size="small"
         exclusive
+        size="small"
       >
         {DEFAULT_SEARCH_RANGE_OPTIONS.map((range) => {
           const { distance } = getDistanceWithUnit(range);
           return (
             <ToggleButton
               key={`range-${range}`}
-              sx={toggleButtonSx}
-              disableRipple
-              value={range}
+              value={String(range)}
               aria-label={range.toString()}
             >
               {distance}
@@ -54,8 +46,6 @@ const SearchRangeController = () => {
         })}
         <ToggleButton
           key={`range-custom`}
-          sx={toggleButtonSx}
-          disableRipple
           value={"custom"}
           aria-label={"custom"}
         >
@@ -70,26 +60,3 @@ const SearchRangeController = () => {
 };
 
 export default SearchRangeController;
-
-const rootSx: SxProps<Theme> = {
-  position: "sticky",
-  top: 0,
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems: "center",
-  flexWrap: "wrap",
-  listStyle: "none",
-  px: 0,
-  py: 1,
-  m: 0,
-  borderRadius: 0,
-  fontSize: 14,
-  borderBottomWidth: 1,
-  borderBottomColor: (t) => (t.palette.mode === "dark" ? grey[900] : grey[200]),
-  borderBottomStyle: "solid",
-};
-
-const toggleButtonSx: SxProps<Theme> = {
-  height: 30,
-  px: 2,
-};

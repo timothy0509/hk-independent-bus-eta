@@ -1,10 +1,8 @@
-import { Box, Divider, List, SxProps, Theme, Typography } from "@mui/material";
 import SuccinctTimeReport from "../SuccinctTimeReport";
 import { useMemo, useState } from "react";
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-} from "@mui/icons-material";
+import { Icon } from "../../ui/Icon";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { Typography } from "../../ui/Typography";
 
 interface HomeRouteListDropDownProps {
   name: string;
@@ -17,7 +15,7 @@ const HomeRouteListDropDown = ({
   routeStrings,
   defaultExpanded = true,
 }: HomeRouteListDropDownProps) => {
-  const [expaned, setExpanded] = useState<boolean>(defaultExpanded);
+  const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
   const routes = useMemo(
     () => routeStrings.split("|").filter((v) => v) ?? [],
     [routeStrings]
@@ -26,16 +24,21 @@ const HomeRouteListDropDown = ({
     return <></>;
   }
   return (
-    <Box>
-      <Box sx={headerSx} onClick={() => setExpanded((prev) => !prev)}>
-        <Typography variant="body1" m={1} fontWeight={700}>
+    <>
+      <div
+        className="flex items-center justify-between mx-1 cursor-pointer"
+        onClick={() => setExpanded((prev) => !prev)}
+      >
+        <Typography variant="body1" className="m-1 font-bold">
           {name}
         </Typography>
-        <Box>{!expaned ? <ExpandMoreIcon /> : <ExpandLessIcon />}</Box>
-      </Box>
-      <Divider />
-      {expaned && (
-        <List disablePadding>
+        <div>
+          <Icon icon={expanded ? ChevronUp : ChevronDown} />
+        </div>
+      </div>
+      <div className="border-b border-border" />
+      {expanded && (
+        <div>
           {routes.map(
             (selectedRoute, idx) =>
               Boolean(selectedRoute) && (
@@ -45,19 +48,11 @@ const HomeRouteListDropDown = ({
                 />
               )
           )}
-        </List>
+        </div>
       )}
-      <Divider />
-    </Box>
+      <div className="border-b border-border" />
+    </>
   );
 };
 
 export default HomeRouteListDropDown;
-
-const headerSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  mx: 1,
-  cursor: "pointer",
-};

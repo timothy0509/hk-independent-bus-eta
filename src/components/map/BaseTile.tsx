@@ -3,7 +3,6 @@ import { useContext, useEffect } from "react";
 import { TileLayer, useMap } from "react-leaflet";
 import AppContext from "../../context/AppContext";
 import useLanguage from "../../hooks/useTranslation";
-import { Box, SxProps, Theme } from "@mui/material";
 import { PMTiles, leafletRasterLayer } from "pmtiles";
 
 const BaseTile = () => {
@@ -44,29 +43,15 @@ const BaseTile = () => {
           language === "zh" ? "tc" : "en"
         )}
       />
-      <div className="leaflet-bottom leaflet-right">
-        <Box sx={attrSx}>
-          <img src="/img/Lands_Department.svg" alt="Lands Department" />
-        </Box>
+      <div className="leaflet-bottom leaflet-right flex h-8 w-8 items-center justify-center pointer-events-none !mb-5 !mr-10">
+        <img
+          className="h-5 w-5 opacity-80"
+          src="/img/Lands_Department.svg"
+          alt="Lands Department"
+        />
       </div>
     </>
   );
 };
 
 export default BaseTile;
-
-const attrSx: SxProps<Theme> = {
-  width: 32,
-  height: 32,
-  marginBottom: "20px !important",
-  marginRight: "40px !important",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  pointerEvents: "none",
-  "& img": {
-    width: 20,
-    height: 20,
-    opacity: 0.8,
-  },
-};

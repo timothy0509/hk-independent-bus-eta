@@ -1,5 +1,7 @@
 import { useCallback, useContext, useState } from "react";
-import { Box, Button, SxProps, Theme, Typography } from "@mui/material";
+import { Box } from "../ui/box";
+import { Button } from "../ui/Button";
+import { Typography } from "../ui/Typography";
 import { useTranslation } from "react-i18next";
 import AppContext from "../../context/AppContext";
 import { iOSRNWebView } from "../../utils";
@@ -33,25 +35,24 @@ const GACookieConsent = () => {
   }
 
   return (
-    <Box sx={rootSx}>
-      <Typography variant="subtitle2" sx={statementSx}>
+    <Box className="flex self-end bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900">
+      <Typography variant="body2" className="p-1">
         {t(
           "We'd like to set analytics cookies that help us improve hkbus.app by measuring how you use it."
         )}
       </Typography>
-      <Box sx={btnContainerSx}>
+      <Box className="flex items-center gap-1 p-1">
         <Button
-          size="small"
-          variant="contained"
-          sx={{ color: "#000" }}
+          size="sm"
+          className="bg-black text-white dark:bg-white dark:text-black"
           onClick={handleAccept}
         >
           {t("Accept")}
         </Button>
         <Button
-          size="small"
-          variant="outlined"
-          color="error"
+          size="sm"
+          variant="outline"
+          className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
           onClick={handleReject}
         >
           {t("Reject")}
@@ -62,21 +63,3 @@ const GACookieConsent = () => {
 };
 
 export default GACookieConsent;
-
-const rootSx: SxProps<Theme> = {
-  background: "#333",
-  display: "flex",
-  alignSelf: "flex-end",
-};
-
-const btnContainerSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  gap: 1,
-  p: 1,
-};
-
-const statementSx: SxProps<Theme> = {
-  p: 1,
-  color: "#fff",
-};

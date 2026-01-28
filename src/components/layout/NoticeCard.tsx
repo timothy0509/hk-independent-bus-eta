@@ -1,18 +1,12 @@
-import {
-  Box,
-  IconButton,
-  Paper,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
-import WarnIcon from "@mui/icons-material/Warning";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
 import useLanguage from "../../hooks/useTranslation";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { iOSRNWebView } from "../../utils";
 import { Language } from "../../data";
-import { Close as CloseIcon } from "@mui/icons-material";
 import AppContext from "../../context/AppContext";
+import { Alert, AlertDescription } from "../ui/alert";
+import { AlertTriangle, X } from "lucide-react";
 
 interface NoticeCardState {
   content: Record<Language, string[]>;
@@ -67,30 +61,34 @@ const NoticeCard = () => {
   }
 
   return (
-    <Paper variant="outlined" sx={rootSx}>
-      <WarnIcon color="warning" />
-      <Box onClick={handleClick} sx={{ cursor: "pointer" }}>
+    <Alert
+      className="rounded-lg border px-2 py-1 flex items-center gap-2 text-left cursor-pointer"
+      onClick={handleClick}
+    >
+      <Icon
+        icon={AlertTriangle}
+        className="text-amber-500 dark:text-amber-400"
+      />
+      <AlertDescription className="flex-1">
         {state.content[language].map((v, idx) => (
-          <Typography key={`_notice-${idx}`} variant="subtitle2">
+          <p key={`_notice-${idx}`} className="text-sm leading-relaxed">
             {v}
-          </Typography>
+          </p>
         ))}
-      </Box>
-      <IconButton size="small" onClick={closeNotice}>
-        <CloseIcon />
-      </IconButton>
-    </Paper>
+      </AlertDescription>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-auto w-auto"
+        onClick={(e) => {
+          e.stopPropagation();
+          closeNotice();
+        }}
+      >
+        <Icon icon={X} />
+      </Button>
+    </Alert>
   );
 };
 
 export default NoticeCard;
-
-const rootSx: SxProps<Theme> = {
-  borderRadius: (theme) => theme.shape.borderRadius,
-  px: 2,
-  py: 1,
-  alignItems: "center",
-  textAlign: "left",
-  gap: 2,
-  display: "flex",
-};

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, Paper, SxProps, Theme, Typography } from "@mui/material";
+import { Typography } from "../ui/Typography";
 import RouteNo from "../route-board/RouteNo";
 import { toProperCase } from "../../utils";
 import { useTranslation } from "react-i18next";
@@ -23,31 +23,19 @@ const RouteHeader = ({ routeId, stopId }: RouteHeaderProps) => {
   const { route, orig, dest, nlbId } = routeList[routeId];
 
   return (
-    <Paper id="route-eta-header" sx={PaperSx} elevation={0}>
+    <div id="route-eta-header" className="text-center bg-transparent relative">
       <RouteNo routeNo={t(route)} component="h1" align="center" />
-      <Typography component="h2" variant="caption" align="center">
+      <Typography component="h2" variant="caption" className="text-center">
         {t("往")} {toProperCase(dest[language])}{" "}
         {nlbId ? t("由") + " " + toProperCase(orig[language]) : ""}
       </Typography>
       <ReverseButton routeId={routeId} stopId={stopId} />
-      <Box sx={rightBtnGroupSx}>
+      <div className="absolute top-0 right-[2%]">
         <RouteStarButton routeId={routeId} />
         <TimetableButton routeId={routeId} />
-      </Box>
-    </Paper>
+      </div>
+    </div>
   );
 };
 
 export default RouteHeader;
-
-const PaperSx: SxProps<Theme> = {
-  textAlign: "center",
-  background: "transparent",
-  position: "relative",
-};
-
-const rightBtnGroupSx: SxProps<Theme> = {
-  position: "absolute",
-  top: 0,
-  right: "2%",
-};

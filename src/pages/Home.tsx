@@ -1,6 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { Paper, SxProps, Theme, Typography } from "@mui/material";
-import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
 
 import { setSeoHeader } from "../utils";
@@ -50,13 +48,9 @@ const Home = () => {
   };
 
   return (
-    <Paper sx={paperSx} square elevation={0}>
-      <Typography component="h1" style={visuallyHidden}>{`${t(
-        "Dashboard"
-      )} - ${t(AppTitle)}`}</Typography>
-      <Typography component="h2" style={visuallyHidden}>
-        {t("home-page-description")}
-      </Typography>
+    <main className="dark:bg-background bg-white text-center flex flex-col overflow-auto w-full h-full">
+      <h1 className="sr-only">{`${t("Dashboard")} - ${t(AppTitle)}`}</h1>
+      <h2 className="sr-only">{t("home-page-description")}</h2>
       <HomeTabbar homeTab={homeTab} onChangeTab={handleTabChange} />
       <NoticeCard />
       <BadWeatherCard />
@@ -66,19 +60,8 @@ const Home = () => {
         homeTab={homeTab}
         onChangeTab={handleTabChange}
       />
-    </Paper>
+    </main>
   );
 };
 
 export default Home;
-
-const paperSx: SxProps<Theme> = {
-  background: (theme) =>
-    theme.palette.mode === "dark" ? theme.palette.background.default : "white",
-  textAlign: "center",
-  display: "flex",
-  flexDirection: "column",
-  overflow: "auto",
-  width: "100%",
-  height: "100%",
-};

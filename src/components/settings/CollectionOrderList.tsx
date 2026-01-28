@@ -1,18 +1,16 @@
 import { useContext, useCallback, useMemo } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
-import {
-  DragHandle as DragHandleIcon,
-  EditOutlined as EditOutlinedIcon,
-} from "@mui/icons-material";
-import { Box, IconButton, SxProps, Theme, Typography } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { Button } from "../ui/Button";
 import { reorder } from "../../utils";
+import { useTranslation } from "react-i18next";
+import { GripVertical, Edit3 } from "lucide-react";
+import { Icon } from "../ui/Icon";
 import Droppable from "../StrictModeDroppable";
 import { ManageMode } from "../../data";
 import CollectionContext from "../../CollectionContext";
 import type { RouteCollection } from "../../@types/types";
+import { cn } from "../../lib/utils";
 
-// mode: delete is for edit here
 const CollectionOrderList = ({ mode }: { mode: ManageMode }) => {
   const { t } = useTranslation();
   const { collections, setCollections, toggleCollectionDialog, savedEtas } =
@@ -21,7 +19,6 @@ const CollectionOrderList = ({ mode }: { mode: ManageMode }) => {
 
   const handleDragEnd = useCallback(
     ({ destination, source }: DropResult) => {
-      // dropped outside the list
       if (!destination) return;
 
       const newItems = reorder(items, source.index, destination.index);
@@ -41,10 +38,10 @@ const CollectionOrderList = ({ mode }: { mode: ManageMode }) => {
     <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="saved-eta-list">
         {(provided) => (
-          <Box
+          <div
             ref={provided.innerRef}
             {...provided.droppableProps}
-            sx={containerSx}
+            className="p-1 overflow-y-auto"
           >
             {mode === "edit" && (
               <DraggableListItem
@@ -65,12 +62,12 @@ const CollectionOrderList = ({ mode }: { mode: ManageMode }) => {
                 />
               ))
             ) : (
-              <Typography sx={{ textAlign: "center", marginTop: 5 }}>
+              <div className="text-center mt-5">
                 <b>{t("未有收藏。")}</b>
-              </Typography>
+              </div>
             )}
             {provided.placeholder}
-          </Box>
+          </div>
         )}
       </Droppable>
     </DragDropContext>
@@ -100,41 +97,30 @@ const DraggableListItem = ({
       isDragDisabled={mode !== "order"}
     >
       {(provided) => (
-        <Box
+        <div
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          sx={entrySx}
+          className={cn(
+            "px-2 py-1 flex justify-between items-center",
+            "shadow-[2px_2px_2px_1px_rgba(0,0,0,0.1)]"
+          )}
         >
-          <Box>
-            <Typography variant="body1">{name}</Typography>
-            <Typography variant="caption">
+          <div>
+            <p className="text-sm font-medium">{name}</p>
+            <p className="text-xs text-muted-foreground">
               {t("Number of ETAs: ")}
               {list.length}
-            </Typography>
-          </Box>
-          {mode === "order" && <DragHandleIcon />}
+            </p>
+          </div>
+          {mode === "order" && <Icon icon={GripVertical} size={20} />}
           {mode === "edit" && (
-            <IconButton onClick={onEdit}>
-              <EditOutlinedIcon />
-            </IconButton>
+            <Button variant="ghost" size="icon" onClick={onEdit}>
+              <Icon icon={Edit3} size={18} />
+            </Button>
           )}
-        </Box>
+        </div>
       )}
     </Draggable>
   );
-};
-
-const containerSx: SxProps<Theme> = {
-  p: 1,
-  overflowY: "scroll",
-};
-
-const entrySx: SxProps<Theme> = {
-  px: 2,
-  py: 1,
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  boxShadow: "2px 2px 2px 1px rgba(0, 0, 0, 0.1)",
 };

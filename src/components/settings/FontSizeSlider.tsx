@@ -1,5 +1,7 @@
-import { ListItemText, Slider, Typography } from "@mui/material";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { Label } from "../ui/label";
+import { Slider } from "../ui/slider";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import AppContext from "../../context/AppContext";
 
@@ -16,26 +18,24 @@ const FontSizeSlider = () => {
     };
   }, [setAppFontSize]);
 
-  const handleChange = useCallback((_: Event, v: number | number[]) => {
-    setFontSize(v as number);
-    value.current = v as number;
+  const handleChange = useCallback(([v]: number[]) => {
+    setFontSize(v);
+    value.current = v;
   }, []);
 
   return (
-    <ListItemText
-      primary={<Typography sx={{ fontSize }}>{t("字體大小")}</Typography>}
-      secondary={
-        <Slider
-          step={2}
-          min={10}
-          max={26}
-          value={fontSize}
-          valueLabelDisplay="auto"
-          size="small"
-          onChange={handleChange}
-        />
-      }
-    />
+    <div className="space-y-2 px-4">
+      <div className="flex items-center justify-between">
+        <Label style={{ fontSize }}>{t("字體大小")}</Label>
+      </div>
+      <Slider
+        step={2}
+        min={10}
+        max={26}
+        value={[fontSize]}
+        onValueChange={handleChange}
+      />
+    </div>
   );
 };
 

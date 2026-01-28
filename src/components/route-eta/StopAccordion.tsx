@@ -1,24 +1,16 @@
 import React, { useContext, useCallback, useMemo } from "react";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Box,
-  IconButton,
-  Typography,
-  SxProps,
-  Theme,
-} from "@mui/material";
-import {
-  NotificationAdd as NotificationAddIcon,
-  NotificationsOff as NotificationsOffIcon,
+  BellPlus as NotificationAddIcon,
+  BellOff as NotificationsOffIcon,
   Star as StarIcon,
-  StarBorder as StarBorderIcon,
+  StarOff as StarBorderIcon,
   Info as InfoIcon,
   Share as ShareIcon,
-  PushPin as PushPinIcon,
-  PushPinOutlined as PushPinOutlinedIcon,
-} from "@mui/icons-material";
+  Pin as PushPinIcon,
+  PinOff as PushPinOutlinedIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toProperCase } from "../../utils";
 import TimeReport from "./TimeReport";
@@ -28,6 +20,7 @@ import useLanguage from "../../hooks/useTranslation";
 import DbContext from "../../context/DbContext";
 import CollectionContext from "../../CollectionContext";
 import PinnedEtasContext from "../../context/PinnedEtasContext";
+import { Typography } from "../ui/Typography";
 
 interface StopAccordionProps {
   routeId: string;
@@ -39,7 +32,7 @@ interface StopAccordionProps {
   onSummaryClick: (idx: number, expand: boolean) => void;
 }
 
-const StopAccordion = React.forwardRef<HTMLDivElement, StopAccordionProps>(
+const StopAccordion = React.forwardRef<HTMLDetailsElement, StopAccordionProps>(
   (props, ref) => {
     const {
       routeId,
@@ -93,16 +86,18 @@ const StopAccordion = React.forwardRef<HTMLDivElement, StopAccordionProps>(
     );
 
     return (
-      <Accordion
+      <details
         id={`stop-${idx}`}
-        expanded={stopIdx === idx && navigator.userAgent !== "prerendering"}
-        onChange={handleChangeInner}
-        TransitionProps={{ unmountOnExit: true }}
+        open={stopIdx === idx && navigator.userAgent !== "prerendering"}
+        className="border border-border shadow-none [&:not(:last-child)]:border-b-0 [&:before]:hidden"
+        onToggle={(e) => {
+          const isOpen = (e.target as HTMLDetailsElement).open;
+          handleChangeInner(null, isOpen);
+        }}
         ref={ref}
-        sx={accordionSx}
       >
-        <AccordionSummary sx={accordionSummarySx}>
-          <Typography component="h3" variant="body1" sx={{ fontWeight: 700 }}>
+        <summary className="bg-muted/3 dark:bg-muted/10 min-h-[44px] flex flex-col gap-2 px-4 py-4 cursor-pointer list-none [&::webkit-details-marker]:hidden data-[state=open]:border-b border-border">
+          <Typography component="h3" variant="body1" className="font-bold">
             {idx + 1}. {toProperCase(stop.name[language])}
           </Typography>
           <Typography variant="body2">
@@ -111,126 +106,86 @@ const StopAccordion = React.forwardRef<HTMLDivElement, StopAccordionProps>(
               ? "　　　　" + t("假日車費") + ": $" + faresHoliday[idx]
               : ""}
           </Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={accordionDetailsRootSx}>
-          <TimeReport
-            containerSx={accordionTimeReportSx}
-            routeId={`${routeId.toUpperCase()}`}
-            seq={idx}
-          />
-          <Box display="flex" flexDirection="column" alignItems="flex-end">
-            <Box>
+        </summary>
+        <div className="flex items-center pl-2 pr-1 py-1 justify-between">
+          <div className="flex-1">
+            <TimeReport
+              className="flex-1"
+              routeId={`${routeId.toUpperCase()}`}
+              seq={idx}
+            />
+          </div>
+          <div className="flex flex-col items-end">
+            <div>
               {isStopAlarm && (
-                <IconButton
+                <Button
+                  variant="ghost"
+                  size="icon"
                   aria-label="alert"
                   onClick={() => toggleStopAlarm(stopId)}
-                  style={{ backgroundColor: "transparent" }}
-                  size="large"
+                  className="bg-transparent"
                 >
-                  {alarmStopId === stopId ? (
-                    <NotificationsOffIcon />
-                  ) : (
-                    <NotificationAddIcon />
-                  )}
-                </IconButton>
+                  <Icon
+                    icon={
+                      alarmStopId === stopId
+                        ? NotificationsOffIcon
+                        : NotificationAddIcon
+                    }
+                  />
+                </Button>
               )}
-              <IconButton
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="stop-info"
                 onClick={onStopInfoClick}
-                style={{ background: "transparent" }}
-                size="large"
+                className="bg-transparent"
               >
-                <InfoIcon />
-              </IconButton>
-              <IconButton
+                <Icon icon={InfoIcon} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="pin"
                 onClick={() => togglePinnedEta(targetRouteId)}
-                style={{ backgroundColor: "transparent" }}
-                size="large"
+                className="bg-transparent"
               >
-                {pinnedEtas.includes(targetRouteId) ? (
-                  <PushPinIcon />
-                ) : (
-                  <PushPinOutlinedIcon />
-                )}
-              </IconButton>
-            </Box>
-            <Box>
-              <IconButton
+                <Icon
+                  icon={
+                    pinnedEtas.includes(targetRouteId)
+                      ? PushPinIcon
+                      : PushPinOutlinedIcon
+                  }
+                />
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="share"
                 onClick={handleShareClick}
-                style={{ backgroundColor: "transparent" }}
-                size="large"
+                className="bg-transparent"
               >
-                <ShareIcon />
-              </IconButton>
-              <IconButton
+                <Icon icon={ShareIcon} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="favourite"
                 onClick={() => {
                   setCollectionDrawerRoute(targetRouteId);
                 }}
-                style={{ backgroundColor: "transparent" }}
-                size="large"
+                className="bg-transparent dark:text-primary text-inherit"
               >
-                {isStarred ? <StarIcon sx={starSx} /> : <StarBorderIcon />}
-              </IconButton>
-            </Box>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
+                <Icon icon={isStarred ? StarIcon : StarBorderIcon} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </details>
     );
   }
 );
 
 export default StopAccordion;
-
-const accordionSx: SxProps<Theme> = {
-  border: "1px solid rgba(0, 0, 0, .125)",
-  boxShadow: "none",
-  "&:not(:last-child)": {
-    borderBottom: 0,
-  },
-  "&:before": {
-    display: "none",
-  },
-  "&.Mui-expanded": {
-    margin: "auto",
-  },
-};
-
-const accordionSummarySx: SxProps<Theme> = {
-  backgroundColor: (theme) =>
-    theme.palette.mode === "dark"
-      ? theme.palette.background.default
-      : "rgba(0, 0, 0, .03)",
-  "&.Mui-expanded": {
-    borderBottom: "1px solid rgba(0, 0, 0, .125)",
-    minHeight: 44,
-  },
-  minHeight: 44,
-  "& .MuiAccordionSummary-content": {
-    margin: "8px 0",
-    flexDirection: "column",
-    "&.Mui-expanded": {
-      margin: "8px 0",
-    },
-  },
-};
-
-const accordionDetailsRootSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  pl: 2,
-  pr: 1,
-  py: 1,
-  justifyContent: "space-between",
-};
-
-const accordionTimeReportSx: SxProps<Theme> = {
-  flex: 1,
-};
-
-const starSx: SxProps<Theme> = {
-  color: (t) =>
-    t.palette.mode === "dark" ? t.palette.primary.main : "inherit",
-};

@@ -1,18 +1,7 @@
 import { useState } from "react";
-import {
-  Box,
-  Tab,
-  Tabs,
-  SxProps,
-  Theme,
-  ToggleButtonGroup,
-  ToggleButton,
-} from "@mui/material";
-import {
-  Code as CodeIcon,
-  DeleteOutline as DeleteIcon,
-  EditOutlined as EditOutlinedIcon,
-} from "@mui/icons-material";
+import { Button } from "../ui/Button";
+import { Code, Trash2, Edit3 } from "lucide-react";
+import { Icon } from "../ui/Icon";
 import { useTranslation } from "react-i18next";
 import CollectionOrderList from "./CollectionOrderList";
 import StopOrderList from "./StopOrderList";
@@ -26,65 +15,46 @@ const UserContentManagement = () => {
   const { t } = useTranslation();
 
   return (
-    <Box sx={rootSx}>
-      <Box sx={headerSx}>
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={tabbarSx}
-          variant="scrollable"
-          scrollButtons
-        >
-          <Tab value="collectionOrder" label={t("路線收藏")} />
-          <Tab value="stopOrder" label={t("車站")} />
-        </Tabs>
-        <ToggleButtonGroup
-          value={mode}
-          onChange={(_, v) => v && setMode(v)}
-          sx={{ alignSelf: "flex-end" }}
-          size="small"
-          exclusive
-        >
-          <ToggleButton value="order">
-            <CodeIcon sx={{ transform: "rotate(90deg)" }} fontSize="small" />
-          </ToggleButton>
-          <ToggleButton value="edit">
-            {tab !== "collectionOrder" && <DeleteIcon fontSize="small" />}
-            {tab === "collectionOrder" && <EditOutlinedIcon fontSize="small" />}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
+    <div className="flex h-full flex-col px-1 overflow-hidden">
+      <div className="flex items-center justify-between py-1">
+        <div className="flex gap-2">
+          <Button
+            variant={tab === "collectionOrder" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setTab("collectionOrder")}
+          >
+            {t("路線收藏")}
+          </Button>
+          <Button
+            variant={tab === "stopOrder" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setTab("stopOrder")}
+          >
+            {t("車站")}
+          </Button>
+        </div>
+        <div className="flex gap-1">
+          <Button
+            variant={mode === "order" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setMode("order")}
+          >
+            <Icon icon={Code} size={16} className="rotate-90" />
+          </Button>
+          <Button
+            variant={mode === "edit" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setMode("edit")}
+          >
+            {tab !== "collectionOrder" && <Icon icon={Trash2} size={16} />}
+            {tab === "collectionOrder" && <Icon icon={Edit3} size={16} />}
+          </Button>
+        </div>
+      </div>
       {tab === "collectionOrder" && <CollectionOrderList mode={mode} />}
       {tab === "stopOrder" && <StopOrderList mode={mode} />}
-    </Box>
+    </div>
   );
 };
 
 export default UserContentManagement;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  px: 1,
-  overflow: "hidden",
-};
-
-const headerSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-  py: 1,
-};
-
-const tabbarSx: SxProps<Theme> = {
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-  [`& .MuiTabs-flexContainer`]: {
-    justifyContent: "flex-start",
-  },
-};

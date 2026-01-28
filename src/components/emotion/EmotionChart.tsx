@@ -1,4 +1,5 @@
-import { Box, SxProps, Theme, Typography } from "@mui/material";
+import { Box } from "../ui/box";
+import { Typography } from "../ui/Typography";
 import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import Plotly from "plotly.js-basic-dist";
@@ -42,7 +43,7 @@ const EmotionChart = () => {
   }, [checkIns]);
 
   return (
-    <Box sx={rootSx}>
+    <Box className="flex flex-col items-start flex-1 gap-4 p-2">
       <Typography variant="body1">{t("In the past 4 weeks, ...")}</Typography>
       <Plot
         data={[
@@ -159,12 +160,3 @@ const EmotionChart = () => {
 };
 
 export default EmotionChart;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "start",
-  flex: 1,
-  gap: 4,
-  p: 2,
-};

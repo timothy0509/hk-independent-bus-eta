@@ -1,7 +1,8 @@
 import { useState, useContext, useCallback } from "react";
 import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
-import { Box, Typography } from "@mui/material";
+import { Box } from "../../ui/box";
+import { Typography } from "../../ui/Typography";
 import SuccinctTimeReport from "../../home/SuccinctTimeReport";
 import { reorder } from "../../../utils";
 import Droppable from "../../StrictModeDroppable";
@@ -60,7 +61,7 @@ const CollectionRoute = () => {
                 />
               ))
             ) : (
-              <Typography sx={{ textAlign: "center", marginTop: 5 }}>
+              <Typography className="text-center mt-5">
                 <b>{t("未有收藏路線")}</b>
               </Typography>
             )}

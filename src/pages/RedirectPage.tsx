@@ -1,5 +1,4 @@
 import { useContext, useEffect } from "react";
-import { Typography } from "@mui/material";
 import AppContext from "../context/AppContext";
 
 interface RedirectPageProps {
@@ -12,7 +11,7 @@ const RedirectPage = ({ url }: RedirectPageProps) => {
     openUrl(url);
   }, [openUrl, url]);
 
-  return <Typography variant="body1">Redirecting...</Typography>;
+  return <p className="text-base">Redirecting...</p>;
 };
 
 export default RedirectPage;

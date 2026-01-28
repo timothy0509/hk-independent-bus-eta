@@ -1,20 +1,15 @@
 import { useCallback, useContext, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  SxProps,
-  TextField,
-  Theme,
-  Typography,
-} from "@mui/material";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/input";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { decompress } from "lzutf8-light";
-import { Check as CheckIcon } from "@mui/icons-material";
+import { Check } from "lucide-react";
 import throttle from "lodash.throttle";
 import AppContext, { AppState } from "../context/AppContext";
 import { DEFAULT_SEARCH_RANGE, isStrings } from "../utils";
 import CollectionContext, { CollectionState } from "../CollectionContext";
+import { cn } from "../lib/utils";
 
 const DataImport = () => {
   const { data } = useParams();
@@ -130,57 +125,32 @@ const DataImport = () => {
   }, [obj, objStrForm, importAppState, importCollectionState, navigate]);
 
   return (
-    <Box sx={rootSx}>
-      <Typography variant="h6" sx={{ textAlign: "center" }}>
-        {t("資料匯入")}
-      </Typography>
+    <div className="flex flex-col justify-start flex-1 gap-1">
+      <h6 className="text-center font-semibold">{t("資料匯入")}</h6>
       {!data && (
-        <TextField
-          variant="outlined"
+        <Input
           value={state}
           onChange={({ target: { value } }) => setState(value)}
-          fullWidth
-          label={t("匯出網址")}
+          className="w-full"
         />
       )}
-      <TextField
-        multiline
-        maxRows={15}
+      <textarea
+        rows={15}
         value={objStrForm}
         disabled
-        fullWidth
-        spellCheck={false}
+        className="w-full p-2 text-sm rounded-md border bg-muted disabled:opacity-50"
       />
       <Button
-        startIcon={<CheckIcon />}
-        variant="outlined"
+        variant="outline"
         disabled={objStrForm === "{}"}
         onClick={confirm}
-        sx={buttonSx}
+        className={cn("border", "text-foreground", "gap-2")}
       >
+        <Check className="h-4 w-4" />
         {t("Accept")}
       </Button>
-    </Box>
+    </div>
   );
 };
 
 export default DataImport;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  flex: 1,
-  gap: 1,
-};
-
-const buttonSx: SxProps<Theme> = {
-  color: (t) =>
-    t.palette.mode === "light"
-      ? t.palette.text.primary
-      : t.palette.primary.main,
-  borderColor: (t) =>
-    t.palette.mode === "light"
-      ? t.palette.text.primary
-      : t.palette.primary.main,
-};

@@ -1,7 +1,8 @@
 import { useContext, useMemo } from "react";
-import { Box, SxProps, Theme, Typography } from "@mui/material";
+import { Typography } from "../ui/Typography";
 import { useTranslation } from "react-i18next";
 import DbContext from "../../context/DbContext";
+import { Alert } from "../ui/alert";
 
 const DbRenewReminder = () => {
   const { t } = useTranslation();
@@ -18,9 +19,12 @@ const DbRenewReminder = () => {
 
   if (navigator.userAgent !== "prerendering" && isOutdated) {
     return (
-      <Box sx={rootSx} onClick={renewDb}>
-        <Typography>{t("db-renew-text")}</Typography>
-      </Box>
+      <Alert
+        className="flex w-full cursor-pointer justify-center border bg-transparent text-foreground"
+        onClick={renewDb}
+      >
+        <Typography variant="body2">{t("db-renew-text")}</Typography>
+      </Alert>
     );
   } else {
     return null;
@@ -28,15 +32,3 @@ const DbRenewReminder = () => {
 };
 
 export default DbRenewReminder;
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "center",
-  flex: 1,
-  width: "100%",
-  p: 2,
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: (theme) => theme.shape.borderRadius / 2,
-  cursor: "pointer",
-};

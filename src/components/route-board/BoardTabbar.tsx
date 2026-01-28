@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, Tabs, Tab, SxProps, Theme } from "@mui/material";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useTranslation } from "react-i18next";
 
 import { TRANSPORT_SEARCH_OPTIONS } from "../../constants";
@@ -18,22 +18,24 @@ const BoardTabbar = ({ boardTab, onChangeTab }: BoardTabbarProps) => {
   useHorizontalWheelScroll();
 
   return (
-    <Box>
-      <Tabs
-        value={boardTab}
-        onChange={(_, v) => onChangeTab(v, true)}
-        sx={tabbarSx}
-        variant="scrollable"
-        scrollButtons
-        allowScrollButtonsMobile
-      >
+    <Tabs
+      value={boardTab}
+      onValueChange={(v) => onChangeTab(v as BoardTabType, true)}
+    >
+      <TabsList className="min-h-[36px] bg-background overflow-auto max-w-full w-full">
         {Object.keys(TRANSPORT_SEARCH_OPTIONS)
           .filter((option) => isRecentSearchShown || option !== "recent")
           .map((option) => (
-            <Tab key={option} label={t(option)} value={option} disableRipple />
+            <TabsTrigger
+              key={option}
+              className="py-0 min-w-[85px] min-h-[32px] data-[state=active]:bg-muted"
+              value={option}
+            >
+              {t(option)}
+            </TabsTrigger>
           ))}
-      </Tabs>
-    </Box>
+      </TabsList>
+    </Tabs>
   );
 };
 
@@ -52,22 +54,4 @@ export const isBoardTab = (
     input === "mtr" ||
     input === "ferry"
   );
-};
-
-const tabbarSx: SxProps<Theme> = {
-  background: (theme) => theme.palette.background.default,
-  minHeight: "36px",
-  overflow: "auto",
-  maxWidth: "100%",
-  [`& .MuiTab-root`]: {
-    py: 0,
-    minWidth: "85px",
-    minHeight: "32px",
-    [`&.MuiButtonBase-root`]: {
-      textTransform: "none",
-    },
-  },
-  [`& .MuiTabs-scroller`]: {
-    overflow: "auto !important",
-  },
 };

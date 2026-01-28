@@ -1,17 +1,19 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Drawer,
-  IconButton,
-  SxProps,
-  Theme,
-  Typography,
-} from "@mui/material";
-import { Add as AddIcon, Maximize as MaximizeIcon } from "@mui/icons-material";
+import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
+import { Box } from "../ui/box";
+import { Sheet, SheetContent } from "../ui/sheet";
 import Collection from "./collections/Collection";
 import WatchEntry from "./collections/WatchEntry";
 import CollectionContext from "../../CollectionContext";
+import { Maximize2, Plus } from "lucide-react";
+
+declare global {
+  interface Window {
+    harmonyBridger?: any;
+  }
+}
 
 const CollectionDrawer = () => {
   const { t } = useTranslation();
@@ -24,82 +26,53 @@ const CollectionDrawer = () => {
   } = useContext(CollectionContext);
 
   return (
-    <Drawer
-      anchor="bottom"
+    <Sheet
       open={collectionDrawerRoute !== null}
-      onClose={() => setCollectionDrawerRoute(null)}
-      PaperProps={{
-        sx: drawerSx,
+      onOpenChange={(open: boolean) => {
+        if (!open) setCollectionDrawerRoute(null);
       }}
     >
-      <Box sx={rootSx}>
-        <MaximizeIcon sx={dividerSx} />
-        {
-          // @ts-expect-error harmonyBridger is in Harmony OS only
-          typeof harmonyBridger === "undefined" && (
-            <Box sx={savedContainerSx}>
-              <WatchEntry />
-            </Box>
-          )
-        }
-
-        <Box sx={savedContainerSx}>
-          <Collection name={t("常用")} list={savedEtas} collectionIdx={-1} />
-        </Box>
-        <Box sx={collectionTitleSx}>
-          <Typography variant="h6">{t("Collections")}</Typography>
-          <IconButton onClick={addNewCollection}>
-            <AddIcon />
-          </IconButton>
-        </Box>
-        <Box sx={collectionContentSx}>
-          {collections.map(({ name, list }, idx) => (
-            <Collection
-              key={`collection-${idx}`}
-              name={name}
-              list={list}
-              collectionIdx={idx}
+      <SheetContent side="bottom">
+        <div className="rounded-t-xl max-h-[50vh] min-h-[30vh] flex flex-col px-2 py-1">
+          <Box className="flex flex-col max-h-[50vh] min-h-[30vh] px-2 py-1">
+            <Icon
+              icon={Maximize2}
+              className="self-center text-muted-foreground"
             />
-          ))}
-        </Box>
-      </Box>
-    </Drawer>
+            {typeof window.harmonyBridger === "undefined" && (
+              <Box className="mb-1 flex">
+                <WatchEntry />
+              </Box>
+            )}
+
+            <Box className="mb-1 flex">
+              <Collection
+                name={t("常用")}
+                list={savedEtas}
+                collectionIdx={-1}
+              />
+            </Box>
+            <Box className="flex items-center justify-between">
+              <div className="text-base font-semibold">{t("Collections")}</div>
+              <Button variant="ghost" size="icon" onClick={addNewCollection}>
+                <Icon icon={Plus} />
+              </Button>
+            </Box>
+            <Box className="flex flex-col gap-2 overflow-y-auto">
+              {collections.map(({ name, list }, idx) => (
+                <Collection
+                  key={`collection-${idx}`}
+                  name={name}
+                  list={list}
+                  collectionIdx={idx}
+                />
+              ))}
+            </Box>
+          </Box>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 
 export default CollectionDrawer;
-
-const drawerSx: SxProps<Theme> = {
-  borderTopLeftRadius: 10,
-  borderTopRightRadius: 10,
-};
-
-const rootSx: SxProps<Theme> = {
-  maxHeight: "50vh",
-  minHeight: "30vh",
-  display: "flex",
-  flexDirection: "column",
-  px: 2,
-  py: 1,
-};
-
-const dividerSx: SxProps<Theme> = {
-  alignSelf: "center",
-};
-
-const savedContainerSx: SxProps<Theme> = {
-  display: "flex",
-  mb: 1,
-};
-
-const collectionTitleSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "space-between",
-};
-
-const collectionContentSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  gap: 2,
-  overflow: "scroll",
-};

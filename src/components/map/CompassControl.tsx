@@ -1,5 +1,4 @@
-import { Box, SxProps, Theme } from "@mui/material";
-import { Explore as ExploreIcon } from "@mui/icons-material";
+import { Compass } from "lucide-react";
 import { isSafari, requestPermission } from "react-world-compass";
 import { useCallback, useContext } from "react";
 import AppContext from "../../context/AppContext";
@@ -18,26 +17,14 @@ const CompassControl = () => {
 
   return (
     <div className="leaflet-bottom leaflet-right">
-      <Box
-        sx={compassControlSx}
-        className="leaflet-control leaflet-bar"
+      <div
+        className="leaflet-control leaflet-bar flex h-8 w-8 cursor-pointer items-center justify-center bg-white !mb-[57px] !mr-1"
         onClick={handleClick}
       >
-        <ExploreIcon sx={{ p: "3px", color: "black" }} />
-      </Box>
+        <Compass className="p-[3px] text-black" />
+      </div>
     </div>
   );
 };
 
 export default CompassControl;
-
-const compassControlSx: SxProps<Theme> = {
-  background: "white",
-  width: 32,
-  height: 32,
-  marginBottom: "57px !important",
-  marginRight: "5px !important",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-};

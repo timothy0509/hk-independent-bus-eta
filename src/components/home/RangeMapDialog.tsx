@@ -1,19 +1,13 @@
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Slider,
-  SxProps,
-  Theme,
-} from "@mui/material";
+import { Box } from "../ui/box";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Slider } from "../ui/slider";
+import { IconButton } from "../ui/icon-button";
+import { X } from "lucide-react";
 import RangeMap from "./RangeMap";
 import { useTranslation } from "react-i18next";
 import { useCallback, useContext, useState } from "react";
 import AppContext from "../../context/AppContext";
 import { Location } from "hk-bus-eta";
-import { Close as CloseIcon } from "@mui/icons-material";
 import { getDistanceWithUnit } from "../../utils";
 
 interface RangeMapDialogProps {
@@ -71,52 +65,39 @@ const RangeMapDialog = ({ open, onClose }: RangeMapDialogProps) => {
   );
 
   return (
-    <Dialog open={open} onClose={handleClose} sx={rootSx}>
-      <DialogTitle sx={titleSx}>
-        {t("自訂搜尋範圍")}
-        <IconButton onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="h-[calc(100dvh-100px)] w-full p-0 flex flex-col">
+        <DialogHeader className="bg-background text-primary flex justify-between items-center px-6 py-4">
+          <DialogTitle>{t("自訂搜尋範圍")}</DialogTitle>
+          <IconButton onClick={handleClose}>
+            <X size={18} />
+          </IconButton>
+        </DialogHeader>
         <RangeMap
           range={state.searchRange}
           value={state.geolocation}
           onChange={updateGeolocation}
         />
-        <Box sx={{ px: 4, py: 5 }}>
+        <Box className="px-4 py-5">
           <Slider
-            sx={sliderSx}
             aria-label="Range"
-            value={convertScale(
-              state.searchRange,
-              searchRangeScale,
-              sliderScale
-            )}
-            valueLabelDisplay="on"
-            marks={sliderScale.map((val, index) => {
-              return {
-                label: formatDistanceWithUnit(searchRangeScale[index]),
-                value: val,
-              };
-            })}
+            value={[
+              convertScale(state.searchRange, searchRangeScale, sliderScale),
+            ]}
+            step={250}
             min={sliderScale[0]}
             max={sliderScale[sliderScale.length - 1]}
-            step={250}
-            scale={(value) =>
-              convertScale(value, sliderScale, searchRangeScale)
-            }
-            valueLabelFormat={(v) => formatDistanceWithUnit(v)}
-            onChange={(_, value) =>
-              updateRange(
-                convertScale(
-                  value as number,
-                  sliderScale,
-                  searchRangeScale
-                ) as number
-              )
+            onValueChange={([value]) =>
+              updateRange(convertScale(value, sliderScale, searchRangeScale))
             }
           />
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            {sliderScale.map((val, index) => (
+              <span key={val}>
+                {formatDistanceWithUnit(searchRangeScale[index])}
+              </span>
+            ))}
+          </div>
         </Box>
       </DialogContent>
     </Dialog>
@@ -124,32 +105,6 @@ const RangeMapDialog = ({ open, onClose }: RangeMapDialogProps) => {
 };
 
 export default RangeMapDialog;
-
-const rootSx: SxProps<Theme> = {
-  "& .MuiPaper-root": {
-    width: "100%",
-    height: "calc(100dvh - 100px)",
-  },
-  "& .MuiDialogContent-root": {
-    p: 0,
-    display: "flex",
-    flexDirection: "column",
-  },
-};
-
-const titleSx: SxProps<Theme> = {
-  backgroundColor: (theme) => theme.palette.background.default,
-  color: (theme) => theme.palette.primary.main,
-  display: "flex",
-  justifyContent: "space-between",
-};
-
-const sliderSx: SxProps<Theme> = {
-  "& .MuiSlider-mark": {
-    backgroundColor: "#bfbfbf",
-    height: 8,
-  },
-};
 
 const sliderScale = [0, 1000, 2000, 3000, 4000, 5000];
 const searchRangeScale = [20, 100, 200, 400, 2000, 4000];

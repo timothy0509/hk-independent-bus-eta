@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, SxProps, Theme } from "@mui/material";
-import MyLocationIcon from "@mui/icons-material/MyLocation";
+import { MapPin } from "lucide-react";
 
 interface CenterControlProps {
   onClick: React.MouseEventHandler<HTMLDivElement>;
@@ -9,30 +8,14 @@ interface CenterControlProps {
 const CenterControl = ({ onClick }: CenterControlProps) => {
   return (
     <div className="leaflet-bottom leaflet-right">
-      <Box
-        sx={centerControlSx}
-        className="leaflet-control leaflet-bar"
+      <div
+        className="leaflet-control leaflet-bar flex h-8 w-8 cursor-pointer items-center justify-center bg-white !mb-5 !mr-1"
         onClick={onClick}
       >
-        <MyLocationIcon className="map-centralControl" />
-      </Box>
+        <MapPin className="p-[2px] text-black" />
+      </div>
     </div>
   );
 };
 
 export default CenterControl;
-
-const centerControlSx: SxProps<Theme> = {
-  background: "white",
-  width: 32,
-  height: 32,
-  marginBottom: "20px !important",
-  marginRight: "5px !important",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  "& .map-centralControl": {
-    padding: "2px",
-    color: "black !important",
-  },
-};

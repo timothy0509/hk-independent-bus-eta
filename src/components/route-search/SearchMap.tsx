@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { MapContainer, Marker, Polyline, useMap } from "react-leaflet";
 import Leaflet, { LatLngExpression } from "leaflet";
-import { Box, SxProps, Theme } from "@mui/material";
 import AppContext from "../../context/AppContext";
 import { checkPosition } from "../../utils";
 import { Location as GeoLocation } from "hk-bus-eta";
@@ -12,6 +11,7 @@ import { SearchRoute } from "../../pages/RouteSearch";
 import DbContext from "../../context/DbContext";
 import CenterControl from "../map/CenterControl";
 import BaseTile from "../map/BaseTile";
+import { cn } from "../../lib/utils";
 
 interface ChangeMapCenter {
   center: GeoLocation | null;
@@ -223,12 +223,12 @@ const SearchMap = ({
   }, [geolocation, center, isFollow, updateCenter]);
 
   return (
-    <Box sx={rootSx}>
+    <div className={cn("h-[35vh] w-full", "dark:brightness-[0.8]")}>
       <MapContainer
         center={getMapCenter()}
         zoom={16}
         scrollWheelZoom={false}
-        className={classes.mapContainer}
+        className="h-[35vh] w-full"
         ref={setMap}
       >
         <ChangeMapCenter
@@ -254,11 +254,8 @@ const SearchMap = ({
         <CenterControl
           onClick={() => {
             if (geoPermission === "granted") {
-              // load from cache to avoid unintentional re-rending
-              // becoz geolocation is updated frequently
               updateCenter({ isFollow: true });
             } else if (geoPermission !== "denied") {
-              // ask for loading geolocation
               updateCenter({ isFollow: true });
               updateGeoPermission("opening");
             }
@@ -266,7 +263,7 @@ const SearchMap = ({
         />
         <CompassControl />
       </MapContainer>
-    </Box>
+    </div>
   );
 };
 
@@ -285,9 +282,12 @@ const BusStopMarker = ({ active, passed, lv }: BusStopMarkerProps) => {
     iconSize: [24, 40],
     iconAnchor: [12, 40],
     iconUrl: "https://unpkg.com/leaflet@1.0.1/dist/images/marker-icon-2x.png",
-    className: `${classes.marker} ${active ? classes.active : ""} ${
-      passed ? classes.passed : ""
-    } lv-${lv}`,
+    className: cn(
+      "w-10 h-10 z-[618] outline-none",
+      lv === 1 && "hue-rotate-[210deg] brightness-150",
+      active && "animate-pulse",
+      passed && "grayscale"
+    ),
   });
 };
 
@@ -296,54 +296,9 @@ const EndsMarker = ({ isStart }: { isStart: boolean }) => {
     iconSize: [24, 40],
     iconAnchor: [12, 40],
     iconUrl: "https://unpkg.com/leaflet@1.0.1/dist/images/marker-icon-2x.png",
-    className: `${classes.marker} ${isStart ? "start" : "end"}`,
+    className: cn(
+      "w-10 h-10 z-[618] outline-none",
+      isStart ? "hue-rotate-[30deg]" : "hue-rotate-[280deg]"
+    ),
   });
-};
-
-const PREFIX = "map";
-
-const classes = {
-  mapContainer: `${PREFIX}-mapContainer`,
-  centralControl: `${PREFIX}-centralControl`,
-  marker: `${PREFIX}-marker`,
-  active: `${PREFIX}-active`,
-  passed: `${PREFIX}-passed`,
-};
-
-const rootSx: SxProps<Theme> = {
-  height: "35vh",
-  filter: (theme) =>
-    theme.palette.mode === "dark" ? "brightness(0.8)" : "none",
-  [`& .${classes.mapContainer}`]: {
-    height: "35vh",
-  },
-  [`& .${classes.marker}`]: {
-    width: "40px",
-    height: "40px",
-    zIndex: 618,
-    outline: "none",
-    "&.lv-1": {
-      filter: "hue-rotate(210deg) brightness(1.5)",
-    },
-    "&.start": {
-      filter: "hue-rotate(30deg)",
-    },
-    "&.end": {
-      filter: "hue-rotate(280deg)",
-    },
-  },
-  [`& .${classes.active}`]: {
-    animation: "blinker 2s cubic-bezier(0,1.5,1,1.5) infinite",
-  },
-  [`& .${classes.passed}`]: {
-    filter: "grayscale(100%)",
-  },
-  [`& .self-center`]: {
-    backgroundImage: "url(/img/self.svg)",
-    backgroundSize: "contain",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    transition: "transform 0.1s ease-out",
-    transformOrigin: "center",
-  },
 };

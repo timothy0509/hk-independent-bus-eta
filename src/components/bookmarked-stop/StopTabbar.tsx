@@ -1,5 +1,6 @@
 import { useContext } from "react";
-import { Tabs, Tab, SxProps, Theme, Typography } from "@mui/material";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Typography } from "../ui/Typography";
 import { useTranslation } from "react-i18next";
 import useLanguage from "../../hooks/useTranslation";
 import CollectionContext from "../../CollectionContext";
@@ -32,41 +33,26 @@ const StopTabbar = ({ stopTab, onChangeTab }: HomeTabbarProps) => {
 
   return (
     <Tabs
-      value={stopTab}
-      onChange={(_, v) => onChangeTab(v, true)}
-      sx={tabbarSx}
-      variant="scrollable"
-      scrollButtons
-      allowScrollButtonsMobile
+      value={stopTab || ""}
+      onValueChange={(v) => onChangeTab(v, true)}
+      className="bg-background min-h-[36px]"
     >
-      {savedStops
-        .map((stopId) => stopId.split("|"))
-        .filter(([, stopId]) => stopList[stopId])
-        .map(([co, stopId]) => (
-          <Tab
-            key={`stops-${stopId}`}
-            label={stopList[stopId].name[language]}
-            value={`${co}|${stopId}`}
-            disableRipple
-          />
-        ))}
+      <TabsList className="h-9 min-h-9 justify-start overflow-x-auto">
+        {savedStops
+          .map((stopId) => stopId.split("|"))
+          .filter(([, stopId]) => stopList[stopId])
+          .map(([co, stopId]) => (
+            <TabsTrigger
+              key={`stops-${stopId}`}
+              value={`${co}|${stopId}`}
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground whitespace-nowrap"
+            >
+              {stopList[stopId].name[language]}
+            </TabsTrigger>
+          ))}
+      </TabsList>
     </Tabs>
   );
 };
 
 export default StopTabbar;
-
-const tabbarSx: SxProps<Theme> = {
-  background: (theme) => theme.palette.background.default,
-  minHeight: "36px",
-  [`& .MuiTab-root`]: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 0,
-    paddingBottom: 0,
-    minHeight: "32px",
-  },
-  [`& .MuiTabs-flexContainer`]: {
-    justifyContent: "flex-start",
-  },
-};

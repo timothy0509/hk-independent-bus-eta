@@ -1,33 +1,25 @@
 import { useEffect, useCallback, useContext, useRef } from "react";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  Input,
-  Toolbar,
-  Typography,
-  Button,
-  SxProps,
-  Theme,
-} from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  Settings as SettingsIcon,
-  SettingsBrightness as SettingsBrightnessIcon,
-  WbSunny as WbSunnyIcon,
-  DarkMode as DarkModeIcon,
-  WifiOff as WifiOffIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
-import { visuallyHidden } from "@mui/utils";
+import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
+import { Box } from "../ui/box";
+import { Typography } from "../ui/Typography";
 import AppContext from "../../context/AppContext";
 import { vibrate, checkMobile } from "../../utils";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { useWeatherCode, WeatherIcons } from "../Weather";
 import useOnline from "../../hooks/useOnline";
 import useLanguage from "../../hooks/useTranslation";
 import DbContext from "../../context/DbContext";
+import {
+  Settings,
+  Monitor,
+  Sun,
+  Moon,
+  WifiOff,
+  Search,
+  MapPin,
+} from "lucide-react";
 
 const Header = () => {
   const {
@@ -81,9 +73,7 @@ const Header = () => {
 
   const handleKeydown = useCallback(
     ({ key, ctrlKey, altKey, metaKey, target }: KeyboardEvent) => {
-      // escape if key is functional
       if (ctrlKey || altKey || metaKey) return;
-      // escape if any <input> has already been focused
       if ((target as HTMLElement).tagName.toUpperCase() === "INPUT") return;
       if ((target as HTMLElement).tagName.toUpperCase() === "TEXTAREA") return;
 
@@ -106,9 +96,6 @@ const Header = () => {
     };
   }, [handleKeydown]);
 
-  /**
-   *  Detect if the previous path is different (i.e "/board")
-   */
   useEffect(() => {
     if (prevPathRef.current !== location.pathname) {
       switchedTab.current = true;
@@ -120,14 +107,12 @@ const Header = () => {
   const handleInputClick = () => {
     if (!inputRef.current) return;
 
-    // If the user has switched tabs, turn on keypad
     if (switchedTab.current) {
       switchedTab.current = false;
       inputRef.current.focus();
       setIsSearching(true);
       return;
     }
-    // Turning on/off the keypad
     if (isSearching) {
       inputRef.current.blur();
       setIsSearching(false);
@@ -137,71 +122,79 @@ const Header = () => {
     }
   };
 
+  const isColorModeSystem = _colorMode === "system";
+  const isColorModeLight = _colorMode === "light";
+  const isColorModeDark = _colorMode === "dark";
+
   return (
-    <Toolbar sx={rootSx}>
+    <header className="flex items-center justify-between border-b">
       <Link
         to={`/${language}`}
-        onClick={(e) => {
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault();
           vibrate(vibrateDuration);
           navigate(`/${language}`);
         }}
         rel="nofollow"
         aria-label="Home"
+        className="text-decoration-none"
       >
-        {onlineStatus === "online" && <Box sx={appTitleSx} />}
-        {onlineStatus === "offline" && (
-          <IconButton>
-            <WifiOffIcon />
-          </IconButton>
+        {onlineStatus === "online" && (
+          <div className="bg-contain w-8 h-8 bg-[url(/img/logo128.png)] dark:bg-[url(/img/dark-32.jpg)]" />
         )}
-        <Typography component="h1" style={visuallyHidden}>
+        {onlineStatus === "offline" && (
+          <Button variant="ghost" size="icon">
+            <Icon icon={WifiOff} />
+          </Button>
+        )}
+        <Typography component="h1" className="sr-only">
           {t("巴士到站預報")}
         </Typography>
       </Link>
-      <Input
-        id="searchInput"
-        sx={searchRouteInputSx}
-        type="text"
-        ref={inputRef}
-        value={searchRoute}
-        placeholder={t("路線")}
-        startAdornment={
-          <Box
-            onClick={() => {
-              setIsSearching(!isSearching);
-            }}
-            sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-            role="button"
-            aria-label="Search Route"
-            tabIndex={0}
-          >
-            <SearchIcon fontSize="small" sx={{ opacity: 0.8 }} />
-          </Box>
-        }
-        onChange={(e) => {
-          if (
-            e.target.value.toUpperCase() in routeList ||
-            e.target.value in routeList
-          ) {
-            (document.activeElement as HTMLElement).blur();
-            navigate(`/${language}/route/${e.target.value}`);
-          }
-          setSearchRoute(e.target.value);
-        }}
-        onClick={handleInputClick}
-        onFocus={() => {
-          vibrate(vibrateDuration);
-          if (navigator.userAgent !== "prerendering" && checkMobile()) {
-            (document.activeElement as HTMLElement).blur();
-          }
-          navigate(`/${language}/board`, { replace: true });
-        }}
-        aria-label="search input, you may enter the route directly"
-      />
-      <Box sx={weatherPanelSx}>
+      <div className="relative">
+        <Box
+          onClick={() => {
+            setIsSearching(!isSearching);
+          }}
+          className="absolute left-2 top-1/2 -translate-y-1/2 flex cursor-pointer items-center"
+          role="button"
+          aria-label="Search Route"
+          tabIndex={0}
+        >
+          <Icon icon={Search} size={16} className="opacity-80" />
+        </Box>
+        <input
+          id="searchInput"
+          type="text"
+          ref={inputRef}
+          value={searchRoute}
+          placeholder={t("路線")}
+          onChange={(e) => {
+            if (
+              e.target.value.toUpperCase() in routeList ||
+              e.target.value in routeList
+            ) {
+              (document.activeElement as HTMLElement).blur();
+              navigate(`/${language}/route/${e.target.value}`);
+            }
+            setSearchRoute(e.target.value);
+          }}
+          onClick={handleInputClick}
+          onFocus={() => {
+            vibrate(vibrateDuration);
+            if (navigator.userAgent !== "prerendering" && checkMobile()) {
+              (document.activeElement as HTMLElement).blur();
+            }
+            navigate(`/${language}/board`, { replace: true });
+          }}
+          aria-label="search input, you may enter the route directly"
+          className="w-[100px] border-0 border-b border-foreground bg-transparent py-1 pl-8 text-center focus-visible:ring-0 focus-visible:border-primary"
+        />
+      </div>
+      <Box className="flex items-center">
         {weatherCodes.slice(0, 2).map((code) => (
-          <Avatar
+          <button
+            key={code}
             onClick={() =>
               openUrl(
                 `https://www.hko.gov.hk/${
@@ -209,119 +202,62 @@ const Header = () => {
                 }/detail.htm`
               )
             }
-            key={code}
-            variant="square"
-            src={WeatherIcons[code]}
-            sx={weatherImg}
-          />
+            className="m-1 h-6 w-6 bg-white"
+            aria-label={`Weather ${code}`}
+          >
+            <img
+              src={WeatherIcons[code]}
+              alt={`Weather ${code}`}
+              className="h-6 w-6"
+            />
+          </button>
         ))}
       </Box>
-      <Box sx={funcPanelSx}>
+      <Box className="flex items-center opacity-70">
         {geoPermission === "granted" && (
-          <IconButton
+          <Button
+            variant="ghost"
+            size="sm"
             aria-label="relocate"
             onClick={() => relocateGeolocation()}
-            size="small"
           >
-            <LocationOnIcon />
-          </IconButton>
+            <Icon icon={MapPin} size={18} />
+          </Button>
         )}
         <Button
-          sx={languageSx}
           onClick={() => handleLanguageChange(language === "zh" ? "en" : "zh")}
           id="lang-selector"
-          variant="text"
-          disableElevation
-          disableRipple
+          variant="ghost"
+          className="w-10 min-w-0 rounded px-1 font-black text-foreground"
           aria-label="Language button"
         >
           {language !== "zh" ? "繁" : "En"}
         </Button>
-        <IconButton
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => {
             vibrate(vibrateDuration);
             toggleColorMode();
           }}
           aria-label="color theme button"
         >
-          {_colorMode === "system" && (
-            <SettingsBrightnessIcon fontSize="small" />
-          )}
-          {_colorMode === "light" && <WbSunnyIcon fontSize="small" />}
-          {_colorMode === "dark" && <DarkModeIcon fontSize="small" />}
-        </IconButton>
-        <IconButton
-          component={Link}
+          {isColorModeSystem && <Icon icon={Monitor} size={18} />}
+          {isColorModeLight && <Icon icon={Sun} size={18} />}
+          {isColorModeDark && <Icon icon={Moon} size={18} />}
+        </Button>
+        <Link
           to={`/${language}/settings`}
           rel="nofollow"
-          aria-label="settings button"
+          className="inline-flex"
         >
-          <SettingsIcon fontSize="small" />
-        </IconButton>
+          <Button variant="ghost" size="sm" aria-label="settings button">
+            <Icon icon={Settings} size={18} />
+          </Button>
+        </Link>
       </Box>
-    </Toolbar>
+    </header>
   );
 };
 
 export default Header;
-
-const rootSx: SxProps<Theme> = {
-  "& a": {
-    textDecoration: "none",
-  },
-  display: "flex",
-  justifyContent: "space-between",
-};
-
-const appTitleSx: SxProps<Theme> = {
-  backgroundImage: (t) =>
-    t.palette.mode === "light"
-      ? "url(/img/logo128.png)"
-      : "url(/img/dark-32.jpg)",
-  backgroundSize: "contain",
-  width: 32,
-  height: 32,
-};
-
-const searchRouteInputSx: SxProps<Theme> = {
-  maxWidth: "100px",
-  "& input": {
-    textAlign: "center",
-  },
-  "& input::before": {
-    borderBottom: (theme) => `1px ${theme.palette.text.primary} solid`,
-  },
-  "&.Mui-focused": {
-    "::after": {
-      borderBottomColor: ({ palette }) =>
-        palette.mode === "dark" ? palette.primary.main : palette.text.primary,
-    },
-  },
-};
-
-const weatherPanelSx: SxProps<Theme> = {
-  display: "flex",
-  alignContent: "center",
-};
-
-const funcPanelSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  opacity: 0.7,
-};
-
-const languageSx: SxProps<Theme> = {
-  color: (theme) => theme.palette.text.primary,
-  minWidth: "40px",
-  p: 1,
-  borderRadius: 5,
-  fontWeight: 900,
-  textTransform: "none",
-};
-
-const weatherImg: SxProps<Theme> = {
-  background: "white",
-  height: 24,
-  width: 24,
-  m: 1,
-};

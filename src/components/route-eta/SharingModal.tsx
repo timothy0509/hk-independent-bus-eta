@@ -1,13 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Container,
-  Modal,
-  Snackbar,
-  SxProps,
-  Theme,
-} from "@mui/material";
+import { Button } from "../ui/Button";
+import { Dialog, DialogContent } from "../ui/dialog";
+import { Alert, AlertDescription } from "../ui/alert";
 import { useTranslation } from "react-i18next";
 import domtoimage from "dom-to-image";
 import mergeImages from "merge-images";
@@ -87,7 +81,7 @@ const SharingModal = ({
   ]);
 
   useEffect(() => {
-    // @ts-expect-error harmonyShare is defined in the mobile app
+    // @ts-expect-error harmonyShare is defined in mobile app
     if (isOpen && window.harmonyShare) {
       handleShareLink();
       return;
@@ -155,44 +149,43 @@ const SharingModal = ({
 
   return (
     <>
-      <Modal sx={rootSx} onClose={() => setIsOpen(false)} open={isOpen}>
-        <Container maxWidth="xs" sx={containerSx} fixed>
-          <Box sx={boxContainerSx}>
-            <Box sx={imgContainerSx}>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
+        <DialogContent className="flex items-center justify-center outline-none max-w-xs">
+          <div className="flex flex-col items-center justify-center flex-1 bg-background w-full">
+            <div className="flex items-center justify-center h-[400px] w-full">
               {imgBase64 ? (
                 <img
                   src={imgBase64}
-                  style={{ objectFit: "contain", width: 396, height: 400 }}
+                  className="object-contain w-[396px] h-[400px]"
                   alt=""
                 />
               ) : (
                 <CircularProgress color="inherit" />
               )}
-            </Box>
-            <Box sx={buttonContainerSx}>
-              <Button sx={buttonSx} onClick={handleShareLink}>
+            </div>
+            <div className="flex w-full bg-background">
+              <Button
+                className="flex-1 border border-white/30"
+                onClick={handleShareLink}
+              >
                 {t("以鏈結分享")}
               </Button>
               <Button
-                sx={buttonSx}
+                className="flex-1 border border-white/30"
                 onClick={handleShareImg}
                 disabled={imgBase64 === ""}
               >
                 {t("以圖片分享")}
               </Button>
-            </Box>
-          </Box>
-        </Container>
-      </Modal>
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        open={isCopied}
-        autoHideDuration={1500}
-        onClose={() => {
-          setIsCopied(false);
-        }}
-        message={t("已複製到剪貼簿")}
-      />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {isCopied && (
+        <Alert className="fixed bottom-0 left-1/2 -translate-x-1/2">
+          <AlertDescription>{t("已複製到剪貼簿")}</AlertDescription>
+        </Alert>
+      )}
     </>
   );
 };
@@ -218,43 +211,4 @@ export default SharingModal;
 const DEFAULT_STATE: SharingModalState = {
   isOpen: false,
   isCopied: false,
-};
-
-const rootSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-};
-
-const containerSx: SxProps<Theme> = {
-  display: "flex",
-  justifyContent: "center",
-  outline: "none",
-};
-
-const boxContainerSx: SxProps<Theme> = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  flex: 1,
-  background: (theme) => theme.palette.background.default,
-};
-
-const imgContainerSx: SxProps<Theme> = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: 400,
-  width: "100%",
-};
-
-const buttonContainerSx: SxProps<Theme> = {
-  display: "flex",
-  width: "100%",
-  backgroundColor: (theme) => theme.palette.background.default,
-};
-
-const buttonSx: SxProps<Theme> = {
-  flex: 1,
-  border: "1px solid rgba(255, 255, 255, 0.3)",
 };

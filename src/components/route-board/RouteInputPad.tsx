@@ -1,7 +1,10 @@
 import { useContext } from "react";
-import { Box, Button, Grid, SxProps, Theme } from "@mui/material";
-import BackspaceOutlinedIcon from "@mui/icons-material/BackspaceOutlined";
-import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
+import { Button } from "../ui/Button";
+import { Icon } from "../ui/Icon";
+import {
+  Delete as BackspaceOutlinedIcon,
+  XCircle as DoNotDisturbOnOutlinedIcon,
+} from "lucide-react";
 import AppContext from "../../context/AppContext";
 import { type BoardTabType } from "../../@types/types";
 import { TRANSPORT_SEARCH_OPTIONS } from "../../constants";
@@ -10,25 +13,29 @@ import DbContext from "../../context/DbContext";
 
 interface KeyButtonProps {
   k: string;
-  sx: SxProps<Theme> | undefined;
   onClick: (k: string) => void;
   disabled?: boolean;
+  className?: string;
 }
 
-const KeyButton = ({ k, onClick, disabled = false, sx }: KeyButtonProps) => {
+const KeyButton = ({
+  k,
+  onClick,
+  disabled = false,
+  className,
+}: KeyButtonProps) => {
   return (
     <Button
-      size="large"
-      variant="contained"
-      sx={{ ...buttonSx, ...sx } as SxProps<Theme>}
+      size="lg"
+      variant="default"
+      className={`w-full text-[1.8em] rounded-none bg-background hover:bg-background text-foreground ${className}`}
       onClick={() => onClick(k)}
       disabled={disabled}
-      disableRipple
     >
       {k === "b" ? (
-        <BackspaceOutlinedIcon />
+        <Icon icon={BackspaceOutlinedIcon} />
       ) : k === "c" ? (
-        <DoNotDisturbOnOutlinedIcon />
+        <Icon icon={DoNotDisturbOnOutlinedIcon} />
       ) : (
         k
       )}
@@ -41,22 +48,22 @@ const RouteNumPad = ({ possibleChar }: { possibleChar: string[] }) => {
     useContext(AppContext);
 
   return (
-    <Grid container spacing={0}>
+    <div className="grid grid-cols-3 gap-0">
       {numPadOrder.split("").map((k) => (
-        <Grid item xs={4} key={"input-" + k}>
+        <div key={"input-" + k} className="col-span-1">
           <KeyButton
             k={k}
             onClick={updateSearchRouteByButton}
-            sx={numberSx}
+            className="h-[62px]"
             disabled={
               (k === "b" && searchRoute === "") ||
               (!"bc".includes(k) && !possibleChar.includes(k)) ||
               (k === "c" && searchRoute === "")
             }
           />
-        </Grid>
+        </div>
       ))}
-    </Grid>
+    </div>
   );
 };
 
@@ -64,19 +71,19 @@ const RouteAlphabetPad = ({ possibleChar }: { possibleChar: string[] }) => {
   const { updateSearchRouteByButton } = useContext(AppContext);
 
   return (
-    <Grid container spacing={1}>
+    <div className="grid grid-cols-2 gap-1">
       {possibleChar
         .filter((k) => isNaN(parseInt(k, 10)))
         .map((k) => (
-          <Grid item xs={6} key={"input-" + k}>
+          <div key={"input-" + k} className="col-span-1">
             <KeyButton
               k={k}
               onClick={updateSearchRouteByButton}
-              sx={alphabetSx}
+              className="h-[52px]"
             />
-          </Grid>
+          </div>
         ))}
-    </Grid>
+    </div>
   );
 };
 
@@ -88,72 +95,23 @@ const RouteInputPad = ({ boardTab }: { boardTab: BoardTabType }) => {
 
   const possibleChar = getPossibleChar(searchRoute, routeList, boardTab);
 
-  const padding = 0;
   if (navigator.userAgent === "prerendering") {
     return <></>;
   }
 
   return (
-    <Box sx={rootSx} padding={padding}>
-      <Box sx={numPadContainerSx} padding={padding}>
+    <div className="z-0 bg-background flex flex-row h-[248px] min-h-[62px] justify-around overflow-hidden p-0">
+      <div className="w-[62%] h-auto overflow-x-hidden overflow-y-scroll p-0">
         <RouteNumPad possibleChar={possibleChar} />
-      </Box>
-      <Box sx={alphabetPadContainerSx} padding={padding}>
+      </div>
+      <div className="w-[35%] h-auto overflow-x-hidden overflow-y-scroll p-0">
         <RouteAlphabetPad possibleChar={possibleChar} />
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 export default RouteInputPad;
-
-const rootSx: SxProps<Theme> = {
-  zIndex: 0,
-  background: (theme) => theme.palette.background.default,
-  display: "flex",
-  flexDirection: "row",
-  // TODO: increase to 258px or enable scroll
-  height: "248px",
-  minHeight: "62px",
-  justifyContent: "space-around",
-  overflow: "hidden",
-};
-
-const buttonSx: SxProps<Theme> = {
-  background: (theme) => theme.palette.background.paper,
-  color: (theme) => theme.palette.text.primary,
-  width: "100%",
-  fontSize: "1.8em",
-  borderRadius: "unset",
-  "&:selected": {
-    color: (theme) => theme.palette.text.primary,
-  },
-  "&:hover": {
-    backgroundColor: (theme) => theme.palette.background.paper,
-  },
-};
-
-const numberSx: SxProps<Theme> = {
-  height: "62px",
-};
-
-const alphabetSx: SxProps<Theme> = {
-  height: "52px",
-};
-
-const alphabetPadContainerSx: SxProps<Theme> = {
-  width: "35%",
-  height: "auto",
-  overflowX: "hidden",
-  overflowY: "scroll",
-};
-
-const numPadContainerSx: SxProps<Theme> = {
-  width: "62%",
-  height: "auto",
-  overflowX: "hidden",
-  overflowY: "scroll",
-};
 
 const getPossibleChar = (
   searchRoute: string,
