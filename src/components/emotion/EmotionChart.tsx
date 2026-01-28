@@ -61,7 +61,7 @@ const EmotionChart = () => {
         layout={{
           width: 380,
           height: 340,
-          title: t("How happy were you?"),
+          title: { text: t("How happy were you?") },
           annotations: [
             {
               text: CheckInOptions.happiness[
@@ -94,7 +94,7 @@ const EmotionChart = () => {
         layout={{
           width: 380,
           height: 340,
-          title: t("What environment made you feel most profound?"),
+          title: { text: t("What environment made you feel most profound?") },
           annotations: [
             {
               text: t(
@@ -129,7 +129,7 @@ const EmotionChart = () => {
         layout={{
           width: 380,
           height: 340,
-          title: t("What are you most grateful for?"),
+          title: { text: t("What are you most grateful for?") },
           annotations: [
             {
               text: t(
