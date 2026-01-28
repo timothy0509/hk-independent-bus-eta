@@ -1,3 +1,5 @@
+// NOTE: This script requires Node.js runtime due to Puppeteer incompatibility with Bun
+// Run with: node scripts/pre-rendering.js
 import express from "express";
 import fs from "fs";
 import { resolve } from "path";

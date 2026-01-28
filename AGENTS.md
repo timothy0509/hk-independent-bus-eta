@@ -4,33 +4,26 @@
 
 ```bash
 # Development
-yarn start                    # Start dev server (https://localhost:443)
+bun start                    # Start dev server (https://localhost:443)
 
 # Build
-yarn build                    # Build for production to build/
-yarn production-build          # Build with SEO optimization
-yarn render                   # Run pre-rendering only
+bun build                    # Build for production to build/
+bun production-build          # Build with SEO optimization
+bun render                   # Run pre-rendering only (Node.js)
 
 # Quality
-yarn lint                     # Run ESLint (max-warnings 0)
+bun run lint                 # Run ESLint (max-warnings 0)
+bun run typecheck            # Run TypeScript type checking
 
 # Deployment
-yarn deploy                   # Build and deploy to gh-pages
-yarn full-deploy              # Production build + deploy
+bun deploy                   # Build and deploy to gh-pages
+bun full-deploy              # Production build + deploy
 
 # Preview
-yarn preview                   # Preview production build
+bun preview                   # Preview production build
 ```
 
-**Testing**: No automated test command defined in package.json. Use jest directly:
-
-```bash
-# Run all tests (if configured)
-npx jest
-
-# Run specific test file
-npx jest path/to/test.test.js
-```
+**Testing**: Use `bun test` instead of jest (requires test migration)
 
 ## Project Stack
 

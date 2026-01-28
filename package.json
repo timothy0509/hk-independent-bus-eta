@@ -5,17 +5,19 @@
   "scripts": {
     "start": "./scripts/start-all-platforms.cmd",
     "build": "./scripts/build-all-platforms.cmd",
-    "production-build": "yarn build && node scripts/sitemap-generator.js && node scripts/pre-rendering.js",
+    "production-build": "bun run build && bun run sitemap && bun run prerender",
     "render": "node scripts/pre-rendering.js",
-    "deploy": "yarn build && gh-pages -d build -t -f -a",
-    "full-deploy": "yarn production-build && gh-pages -d build -t -f -a",
-    "alpha-deploy": "yarn build && echo 'alpha.hkbus.app' > build/CNAME && gh-pages -d build --remote alpha -t -f -a",
-    "alpha-full-deploy": "yarn production-build && gh-pages -d build --remote alpha -t -f -a",
+    "sitemap": "node scripts/sitemap-generator.js",
+    "deploy": "bun run build && gh-pages -d build -t -f -a",
+    "full-deploy": "bun run production-build && gh-pages -d build -t -f -a",
+    "alpha-deploy": "bun run build && echo 'alpha.hkbus.app' > build/CNAME && gh-pages -d build --remote alpha -t -f -a",
+    "alpha-full-deploy": "bun run production-build && echo 'alpha.hkbus.app' > build/CNAME && gh-pages -d build --remote alpha -t -f -a",
     "docker": "cd docker && docker-compose up -d --build",
     "docker:build": "docker build . --pull --build-arg $(sed 's:#.*$::g' docker/.env | sed '/^\\s*$/d' | sed ':a;N;$!ba;s/\\n/ --build-arg /g')",
     "docker:build-noenv": "docker build . --pull --build-arg $(sed 's:#.*$::g' .env | sed '/^\\s*$/d' | sed ':a;N;$!ba;s/\\n/ --build-arg /g')",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -90,6 +92,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "13.3.0",
     "@testing-library/user-event": "^14.2.1",
+    "@types/bun": "^1.3.7",
     "@types/dom-to-image": "^2.6.7",
     "@types/i18next": "^13.0.0",
     "@types/jest": "^28.1.2",

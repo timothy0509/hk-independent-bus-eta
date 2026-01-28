@@ -1,12 +1,12 @@
 :<<"::WINDOWS_BATCH"
 :; ##### BEGIN Windows Batch Script #####
 @echo off
-call ./scripts/prebuild-win.cmd && vite --force
+call ./scripts/prebuild-win.cmd && bun run vite --force
 :; ##### END Windows Batch Script #####
 GOTO :END_OF_SCRIPT
 ::WINDOWS_BATCH
 
 # ##### BEGIN Unix Shell Script #####
-. ./scripts/prebuild.sh; vite --force
+. ./scripts/prebuild.sh; bun run vite --force
 # ##### END Unix Shell Script #####
 #:END_OF_SCRIPT
